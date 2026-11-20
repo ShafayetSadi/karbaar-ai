@@ -16,7 +16,7 @@ type Invite = components['schemas']['InviteRead'];
 
 /**
  * Who is in the shop's team. Everyone sees the members; the owner also invites people, withdraws
- * pending invites and removes teammates (ADR 0020). The server enforces who may do what.
+ * pending invites and removes teammates. The server enforces who may do what.
  * When the shop has more than one member, each member also gets a Notifications card for their
  * own assignment-digest email preference.
  */

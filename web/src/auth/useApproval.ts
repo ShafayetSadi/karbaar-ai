@@ -13,7 +13,7 @@ export interface Approval {
   phone: string | null;
 }
 
-/** Where the signed-in shop is in staff review (ADR 0060). Signed-out callers count as approved. */
+/** Where the signed-in shop is in staff review. Signed-out callers count as approved. */
 export function useApproval(): Approval {
   const state = useOptionalAuth()?.state;
   if (state?.status !== 'authenticated') {

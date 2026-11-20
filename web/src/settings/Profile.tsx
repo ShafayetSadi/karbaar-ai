@@ -15,7 +15,7 @@ function localPhone(phone: string | null | undefined): string {
 }
 
 /**
- * The signed-in person: photo, name and phone (ADR 0059). Everyone edits their own; the email is
+ * The signed-in person: photo, name and phone. Everyone edits their own; the email is
  * the login and stays read-only. The shop name is shown for context, and renamed in `ShopName`.
  */
 export function Profile({ me }: { me: Me }) {

@@ -1,5 +1,5 @@
 /**
- * What this browser can do for phone alerts (ADR 0072), kept apart from the UI so each state can be
+ * What this browser can do for phone alerts, kept apart from the UI so each state can be
  * tested and so logout can drop the subscription without loading the settings page.
  */
 

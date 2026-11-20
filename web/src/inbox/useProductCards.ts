@@ -25,7 +25,7 @@ export interface ProductCards {
 }
 
 /**
- * The product cards chosen for the next reply (ADR 0038). Only ids are sent: the API builds each
+ * The product cards chosen for the next reply. Only ids are sent: the API builds each
  * card from the catalog when it goes, so the price and stock the customer sees are current.
  */
 export function useProductCards(): ProductCards {

@@ -2,7 +2,7 @@ import { cx } from './cx';
 
 /**
  * The Karbaar mark: a shop door hanging from a matra (the headline stroke of Bangla letters),
- * with a price tag. Concept from docs/product/brand.md, "Logo"; a designer redraw is pending.
+ * with a price tag. A designer redraw is pending.
  * In the sidebar and above the sign-in forms.
  */
 export function BrandMark({ className }: { className?: string }) {

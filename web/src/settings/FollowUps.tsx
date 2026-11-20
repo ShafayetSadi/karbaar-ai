@@ -14,7 +14,7 @@ const DELAYS = [60, 120, 180, 240, 360, 480, 720];
 
 /**
  * Whether a customer who goes quiet after a product answer gets one nudge from the AI agent, and
- * how long after (ADR 0047). Off by default: an unwanted message costs goodwill.
+ * how long after. Off by default: an unwanted message costs goodwill.
  */
 export function FollowUps({ access }: { access: StoreNotesAccess }) {
   const { t } = useTranslation();

@@ -58,8 +58,8 @@ export function MessengerConnection() {
   const owner = state.status === 'authenticated' && state.me.role === 'owner';
   const verified = state.status === 'authenticated' && state.me.user.email_verified;
   const { locked } = useApproval();
-  // Until Meta approves the app, connecting is closed for every shop staff have not exempted
-  // (ADR 0081). The answer comes with the features; until it arrives, nothing to connect with.
+  // Until Meta approves the app, connecting is closed for every shop staff have not exempted.
+  // The answer comes with the features; until it arrives, nothing to connect with.
   // The key is the staff exemption's name, but the API resolves it to "connecting is open" here.
   const features = useFeatures();
   const connectOpen = features.isEnabled('page_connect_before_meta_live');

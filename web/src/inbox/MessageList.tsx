@@ -451,7 +451,7 @@ function AuthorLabel({ author, fromDraft }: { author: Message['author']; fromDra
   return <span className="px-1 text-xs text-ink-faint">{t('inbox.sentElsewhere')}</span>;
 }
 
-// An auto reply dropped because the customer wrote again while it was being typed (ADR 0021): the
+// An auto reply dropped because the customer wrote again while it was being typed: the
 // agent answers their newer message instead, so this is no failure to act on.
 const SUPERSEDED = 'superseded_by_customer';
 // The rest of a send is not sent once one message of it fails (images go out in order).

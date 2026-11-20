@@ -1,6 +1,6 @@
 /**
  * Product types are form presets only: they pick which option names are suggested. No pricing,
- * stock or agent rule may read them (docs/plans/catalog/c1-form-fundamentals.md).
+ * stock or agent rule may read them.
  */
 export const PRODUCT_TYPES = [
   'clothing',

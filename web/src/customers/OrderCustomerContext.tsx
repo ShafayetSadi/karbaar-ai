@@ -8,7 +8,7 @@ import { TeamNote } from './TeamNote';
 
 /**
  * Everything the team knows about the customer, on the order itself: the private team note and
- * their other orders with how they ended. "Open the order, see everything" (ADR 0034).
+ * their other orders with how they ended. "Open the order, see everything".
  */
 export function OrderCustomerContext({
   customerId,

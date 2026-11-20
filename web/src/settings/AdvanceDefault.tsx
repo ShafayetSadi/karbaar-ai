@@ -10,7 +10,7 @@ type Policy = 'none' | 'delivery_fee' | 'fixed' | 'full';
 const POLICIES: Policy[] = ['none', 'delivery_fee', 'fixed', 'full'];
 
 /**
- * The advance a product asks for when its own setting is "store default" (ADR 0025). The merchant
+ * The advance a product asks for when its own setting is "store default". The merchant
  * collects the money in their own bKash or Nagad and records it on the order; nothing is charged
  * here.
  */

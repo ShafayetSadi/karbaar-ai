@@ -12,7 +12,7 @@ export type FeatureKey =
   | 'web_chat'
   | 'courier_booking'
   // Despite the key, the API resolves this to "Page connection is open": the platform switch
-  // META_PAGE_CONNECT_OPEN, or staff's exemption for this shop (ADR 0081).
+  // META_PAGE_CONNECT_OPEN, or staff's exemption for this shop.
   | 'page_connect_before_meta_live'
   | 'ai_daily_token_budget'
   | 'team_members_max'
@@ -41,7 +41,7 @@ export interface FeaturesResult {
 }
 
 /**
- * Resolved feature flags and limits for the signed-in merchant (ADR 0063).
+ * Resolved feature flags and limits for the signed-in merchant.
  */
 export function useFeatures(): FeaturesResult {
   const query = useQuery({

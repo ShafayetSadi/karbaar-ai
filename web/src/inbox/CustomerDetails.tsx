@@ -14,7 +14,7 @@ type Customer = ConversationContext['customer'];
 type Noted = ConversationContext['customer_details'];
 type Gender = 'male' | 'female';
 
-/** What the shop may store as a gender, with '' for "not known" (ADR 0052). */
+/** What the shop may store as a gender, with '' for "not known". */
 const GENDERS = ['', 'male', 'female'] as const;
 
 /** The translation key for a stored gender; anything else reads as "not known". */

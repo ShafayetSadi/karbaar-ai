@@ -40,7 +40,7 @@ const TONES: Record<ShipmentStatus, ChipTone> = {
 };
 
 /**
- * The order's courier booking (ADR 0033): book a confirmed order, then follow the parcel. Shows
+ * The order's courier booking: book a confirmed order, then follow the parcel. Shows
  * the newest attempt with its timeline; the merchant can ask the courier now, record a booking
  * found in the courier's panel, or book again.
  */

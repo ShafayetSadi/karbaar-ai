@@ -39,7 +39,7 @@ type Notice =
   | 'testFailed';
 
 /**
- * Phone alerts for this member (ADR 0072). Nothing here asks the browser for permission until the
+ * Phone alerts for this member. Nothing here asks the browser for permission until the
  * person presses Turn on; every other state only explains what is missing. The list is the
  * member's own devices, and a device whose sign-in ended shows as off until it is turned on again.
  */

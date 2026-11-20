@@ -7,8 +7,8 @@ import { finishedParcels, type DeliveryRecord } from './DeliveryRecordChip';
 
 /**
  * Before confirming or taking an order: this customer sent parcels back before. Counts only, and
- * never a block (ADR 0025: the merchant decides). Offers to ask them for the delivery charge as
- * an advance from now on (ADR 0034); `onAsked` lets the page refresh what shows the advance.
+ * never a block: the merchant decides. Offers to ask them for the delivery charge as
+ * an advance from now on; `onAsked` lets the page refresh what shows the advance.
  */
 export function ReturnsWarning({
   customerId,

@@ -12,7 +12,9 @@ app = FastAPI(title="Karbaar sales assistant (demo)")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[o.strip() for o in os.environ.get(
-        "KARBAAR_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:4173").split(",") if o.strip()],
+        "KARBAAR_ALLOWED_ORIGINS", "").split(",") if o.strip()],
+    # The dashboard on this machine, whichever port the dev server picked.
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_methods=["POST", "GET"],
     allow_headers=["Content-Type"],
 )

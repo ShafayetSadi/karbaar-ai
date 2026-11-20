@@ -8,7 +8,7 @@ export type CourierConnection = components['schemas']['CourierConnectionRead'];
 export type DeliveryType = Shipment['delivery_type'];
 export type Quote = components['schemas']['ShipmentQuoteRead'];
 
-/** What each courier offers (ADR 0033). The API refuses anything else with
+/** What each courier offers. The API refuses anything else with
  * `DELIVERY_TYPE_UNSUPPORTED`; this only keeps the choice from offering it. */
 export const DELIVERY_TYPES: Record<string, DeliveryType[]> = {
   pathao: ['standard', 'on_demand'],

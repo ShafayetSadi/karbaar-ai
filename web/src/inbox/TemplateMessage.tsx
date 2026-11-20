@@ -14,7 +14,7 @@ type Card = components['schemas']['TemplateCardRead'];
 type QuickReply = components['schemas']['QuickReplyRead'];
 
 /**
- * Cards, a button message or a receipt we sent on Messenger (ADR 0038), drawn as the customer
+ * Cards, a button message or a receipt we sent on Messenger, drawn as the customer
  * saw them. Read-only: the buttons are what the customer could tap, not actions for the merchant,
  * so they are not buttons here. The one exception is `onOrder`, which puts a "+ Order" button on
  * each opened product card for the merchant. Sent cards show as a short strip (`CardStrip`); the

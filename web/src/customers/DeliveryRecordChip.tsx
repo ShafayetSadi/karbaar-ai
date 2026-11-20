@@ -10,7 +10,7 @@ export function finishedParcels(record: DeliveryRecord): number {
 }
 
 /**
- * The customer's own record with this shop, as counts (ADR 0034): "2 returned of 5", or
+ * The customer's own record with this shop, as counts: "2 returned of 5", or
  * "3 delivered". Nothing when they have no finished or cancelled order yet. Never a score.
  */
 export function DeliveryRecordChip({ record }: { record: DeliveryRecord | null | undefined }) {

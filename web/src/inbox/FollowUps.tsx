@@ -12,7 +12,7 @@ import type { ConversationContext } from './useConversationContext';
 
 /**
  * What is coming up on this chat: the team's own Later reminder (set and cleared from the thread
- * header) and the one nudge the AI may send a customer who went quiet (ADR 0047).
+ * header) and the one nudge the AI may send a customer who went quiet.
  */
 export function FollowUps({
   conversation,

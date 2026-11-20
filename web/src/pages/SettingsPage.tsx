@@ -236,7 +236,7 @@ export function SettingsPage() {
               hint={t('settings.groups.people.hint')}
             >
               <Team />
-              {/* Who at Karbaar read the shop's content, and why (ADR 0037). Everyone sees it; the owner can end it. */}
+              {/* Who at Karbaar read the shop's content, and why. Everyone sees it; the owner can end it. */}
               <SupportAccess />
             </Group>
           )}
@@ -258,7 +258,7 @@ export function SettingsPage() {
                   </Link>
                 ))}
               </nav>
-              {/* Everyone reads the AI settings; only a verified owner changes them (ADR 0020). */}
+              {/* Everyone reads the AI settings; only a verified owner changes them. */}
               <SettingsBlock id="ai-basics" title={t('settings.jump.ai-basics')}>
                 <AiUsage />
                 <AllowedLanguages access={aiAccess} />

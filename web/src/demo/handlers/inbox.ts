@@ -249,8 +249,12 @@ interface Seed {
   handoffReason?: string | null;
   handoffNote?: string | null;
   product?: CastProduct;
+  /** Every product the draft mentions, for its cards; `product` is the first. */
+  products?: CastProduct[];
   filter?: Filter;
   proposal?: boolean;
+  /** The agent's own order proposal; when present it is used as given (after checks). */
+  agentProposal?: AgentProposal;
   confidence?: number;
   flags?: string[];
 }
@@ -650,6 +654,27 @@ const HAND: Record<number, ((t: Thread) => Seed)[]> = {
   ],
 };
 
+const proposalCustomer = (t: Thread): Proposal['customer'] => {
+  const state = customerOf(t);
+  const address = state.addresses.find((a) => a.is_default) ?? state.addresses[0];
+  return {
+    address_line: address?.line ?? null,
+    address_raw: address?.raw_text ?? null,
+    area: address?.area ?? null,
+    district: address?.district ?? null,
+    name: state.name,
+    phone_e164: state.phone,
+    phone_input: state.phone?.replace('+88', '') ?? null,
+  };
+};
+
+/** Inside Dhaka by the customer's address, unless the message says outside. */
+const deliveryFor = (t: Thread, text: string) => {
+  const address = customerOf(t).addresses.find((a) => a.is_default) ?? customerOf(t).addresses[0];
+  const outside = (address?.district ?? t.customer.district) !== 'Dhaka' || /outside/i.test(text);
+  return outside ? OUTSIDE : INSIDE;
+};
+
 function buildProposal(
   t: Thread,
   p: CastProduct,
@@ -659,22 +684,11 @@ function buildProposal(
 ): Proposal | null {
   const variant = variantsOf(p, filter).find((v) => variantStock(p, v.stock) > 0);
   if (!variant) return null;
-  const state = customerOf(t);
-  const address = state.addresses.find((a) => a.is_default) ?? state.addresses[0];
   const unit = priceMinor(p);
-  const outside = (address?.district ?? t.customer.district) !== 'Dhaka' || /outside/i.test(text);
-  const option = outside ? OUTSIDE : INSIDE;
+  const option = deliveryFor(t, text);
   return {
     currency: 'BDT',
-    customer: {
-      address_line: address?.line ?? null,
-      address_raw: address?.raw_text ?? null,
-      area: address?.area ?? null,
-      district: address?.district ?? null,
-      name: state.name,
-      phone_e164: state.phone,
-      phone_input: state.phone?.replace('+88', '') ?? null,
-    },
+    customer: proposalCustomer(t),
     delivery_fee_minor: option.feeMinor,
     delivery_name: option.name,
     delivery_option_id: option.id,
@@ -708,8 +722,23 @@ interface AgentReply {
   needs_human: boolean;
   handoff_reason: string | null;
   product_refs: string[];
-  order_proposal: { lines: { product_id: string; variant_id: string }[] } | null;
+  order_proposal: AgentProposal | null;
   flags: string[];
+}
+
+interface AgentProposal {
+  lines: {
+    product_id: string;
+    variant_id: string;
+    name?: string;
+    quantity: number;
+    unit_price_minor: number;
+    line_total_minor: number;
+  }[];
+  subtotal_minor: number;
+  delivery_option_id: string;
+  delivery_fee_minor: number;
+  total_minor: number;
 }
 
 function agentRequest(t: Thread, hint: string | null) {
@@ -776,10 +805,80 @@ async function askAgent(url: string, request: ReturnType<typeof agentRequest>): 
   }
 }
 
-/** The seed holds one product; the order proposal's first line wins, else the first product ref. */
+/**
+ * The agent's order proposal as a demo proposal. Lines whose variant is not in the catalog are
+ * dropped; prices and totals are recomputed from the catalog, and the catalog wins over the
+ * agent's numbers when they differ. The delivery fee comes from the delivery option's catalog fee.
+ */
+function agentOrder(t: Thread, agent: AgentProposal, draftId: string, text: string): Proposal | null {
+  const items: Proposal['items'] = [];
+  for (const line of agent.lines) {
+    const product = PRODUCTS.find((p) => p.id === line.product_id);
+    const variant = product?.variants.find((v) => v.id === line.variant_id);
+    const quantity = Math.trunc(line.quantity);
+    if (!product || !variant || !(quantity >= 1)) {
+      console.warn('Dropping an agent order line that is not in the catalog.', line);
+      continue;
+    }
+    const unit = liveProduct(product)?.variants.find((v) => v.id === variant.id)?.price_minor ?? priceMinor(product);
+    const total = unit * quantity;
+    if (unit !== line.unit_price_minor || total !== line.line_total_minor || quantity !== line.quantity) {
+      console.warn('Agent line numbers differ from the catalog; using the catalog.', line, { unit, quantity, total });
+    }
+    items.push({
+      line_total_minor: total,
+      options: { ...variant.options },
+      product_id: product.id,
+      product_name: product.name,
+      quantity,
+      unit_price_minor: unit,
+      variant_id: variant.id,
+    });
+  }
+  if (!items.length) return null;
+  const known = DELIVERY_OPTIONS.find((o) => o.id === agent.delivery_option_id);
+  if (!known) console.warn('Unknown delivery option from the agent; choosing by address.', agent.delivery_option_id);
+  const option = known ?? deliveryFor(t, text);
+  const subtotal = items.reduce((sum, i) => sum + i.line_total_minor, 0);
+  const total = subtotal + option.feeMinor;
+  if (
+    subtotal !== agent.subtotal_minor ||
+    option.feeMinor !== agent.delivery_fee_minor ||
+    total !== agent.total_minor
+  ) {
+    console.warn('Agent order totals differ from the catalog; using the catalog.', agent, {
+      subtotal,
+      delivery_fee_minor: option.feeMinor,
+      total,
+    });
+  }
+  return {
+    currency: 'BDT',
+    customer: proposalCustomer(t),
+    delivery_fee_minor: option.feeMinor,
+    delivery_name: option.name,
+    delivery_option_id: option.id,
+    draft_id: draftId,
+    issues: [],
+    items,
+    missing: [],
+    subtotal_minor: subtotal,
+    total_minor: total,
+  };
+}
+
+/** The seed's `product` is the first line's product, else the first product ref; `products` has all. */
 function seedFromAgent(reply: AgentReply): Seed {
-  const line = reply.order_proposal?.lines[0];
-  const product = PRODUCTS.find((p) => p.id === (line?.product_id ?? reply.product_refs[0]));
+  const agentProposal = reply.order_proposal ?? undefined;
+  const line = agentProposal?.lines[0];
+  const ids = [
+    ...(agentProposal?.lines.map((l) => l.product_id) ?? []),
+    ...reply.product_refs,
+  ];
+  const products = [...new Set(ids)]
+    .map((id) => PRODUCTS.find((p) => p.id === id))
+    .filter((p): p is CastProduct => Boolean(p));
+  const product = products[0];
   const variant = product?.variants.find((v) => v.id === line?.variant_id);
   return {
     text: reply.reply_text,
@@ -787,8 +886,10 @@ function seedFromAgent(reply: AgentReply): Seed {
     needsHuman: reply.needs_human,
     handoffReason: reply.handoff_reason,
     product,
+    products,
     filter: variant ? { ...variant.options } : {},
-    proposal: Boolean(line && product),
+    proposal: Boolean(agentProposal?.lines.length && product),
+    agentProposal,
     flags: reply.flags,
   };
 }
@@ -798,22 +899,23 @@ function makeDraft(t: Thread, seed: Seed, at: string): Draft {
   const id = nextId('6');
   const p = seed.product;
   const lang: Lang = detectLang(seed.text) === 'bn' ? 'bn' : 'en';
-  const proposal = p && seed.proposal ? buildProposal(t, p, seed.filter ?? {}, id, seed.text) : null;
+  const proposal = seed.agentProposal
+    ? agentOrder(t, seed.agentProposal, id, seed.text)
+    : p && seed.proposal
+      ? buildProposal(t, p, seed.filter ?? {}, id, seed.text)
+      : null;
+  const shown = seed.products?.length ? seed.products : p ? [p] : [];
   if (proposal) t.proposal = proposal;
   const variantNote =
     p && seed.filter && Object.keys(seed.filter).length ? ` · ${labelOf(seed.filter)}` : '';
   return {
-    cards: p
-      ? [
-          {
-            buttons: [],
-            image_url: null,
-            product_id: p.id,
-            subtitle: `${taka(priceMinor(p), lang)}${variantNote}`,
-            title: p.name,
-          },
-        ]
-      : [],
+    cards: shown.map((card, i) => ({
+      buttons: [],
+      image_url: null,
+      product_id: card.id,
+      subtitle: `${taka(priceMinor(card), lang)}${i === 0 ? variantNote : ''}`,
+      title: card.name,
+    })),
     confidence: seed.confidence ?? 0.93,
     created_at: at,
     flags: (seed.flags ?? []).map((code) => ({ code, detail: '' })),
@@ -824,7 +926,7 @@ function makeDraft(t: Thread, seed: Seed, at: string): Draft {
     needs_human: seed.needsHuman ?? false,
     order_proposal: proposal ? { ...proposal } : null,
     photos: [],
-    product_refs: p ? [{ name: p.name, product_id: p.id }] : [],
+    product_refs: shown.map((x) => ({ name: x.name, product_id: x.id })),
     sources: [],
     text: seed.text,
     trigger_message_id: trigger?.id ?? '',

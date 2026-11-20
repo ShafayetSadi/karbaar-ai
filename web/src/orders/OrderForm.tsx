@@ -183,7 +183,7 @@ export function OrderForm({
   const optionId = values.deliveryOptionId;
   const couponCode = values.couponCode.trim() || null;
   // The order attaches to whoever owns the phone; until one is typed, the conversation's customer.
-  // Their advance, if the shop asks one of them, is part of the price (ADR 0034).
+  // Their advance, if the shop asks one of them, is part of the price.
   const quoteCustomerId = match?.id ?? customerId ?? null;
   useEffect(() => {
     if (!active || !items || !optionId) {

@@ -1,7 +1,7 @@
 import { parseTaka, toTakaInput } from '../i18n/format';
 
 /**
- * Where a product can be delivered and how much advance it asks for (ADR 0025). Both are
+ * Where a product can be delivered and how much advance it asks for. Both are
  * bookkeeping the API enforces: the form only helps the merchant say it and see problems early.
  */
 export const ADVANCE_POLICIES = ['inherit', 'none', 'delivery_fee', 'fixed', 'full'] as const;

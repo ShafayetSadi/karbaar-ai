@@ -101,7 +101,7 @@ function filterOf(tab: Tab): {
   if (tab === 'toChase') return {};
   // Courier shipments the merchant must look at: unknown outcome, partial, cancelled after booking.
   if (tab === 'needsReview') return { shipment: 'needs_review' };
-  // Orders the customer did not confirm in Messenger (ADR 0032): the merchant phones them.
+  // Orders the customer did not confirm in Messenger: the merchant phones them.
   if (tab === 'toCall') return { confirmation: 'needs_call' };
   if (tab === 'readySoon') return { status: 'confirmed', ready_by_before: readySoonCutoff() };
   return { status: tab };

@@ -10,7 +10,7 @@
 :root {
   color-scheme: light;
   /*
-   * Neutral greys with a lime accent (docs/product/brand.md, "Visual identity", dashboard). Three
+   * Neutral greys with a lime accent (dashboard). Three
    * surfaces: `chrome` (sidebar and the frame around the content), `paper` (the inset content
    * panel) and `panel` (cards inside it). Lime is a fill only in light mode: text, links and focus
    * rings use `active`, a dark olive that reads on white.

@@ -11,7 +11,7 @@ import { formatDateTime } from '../i18n/format';
 type Grant = components['schemas']['SupportAccessRead'];
 
 /**
- * Who at Karbaar read this shop's content, why and until when (ADR 0037). Everyone in the shop
+ * Who at Karbaar read this shop's content, why and until when. Everyone in the shop
  * sees the list; only the owner can end a grant, and the server enforces that.
  */
 export function SupportAccess() {

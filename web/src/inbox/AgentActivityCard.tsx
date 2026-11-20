@@ -16,7 +16,7 @@ export function isWorking(activity: Pick<AgentActivity, 'phase'> | null | undefi
 }
 
 /**
- * What the AI is doing in this conversation (ADR 0051), where its draft will appear. While it
+ * What the AI is doing in this conversation, where its draft will appear. While it
  * works: the steps so far and the one it is on, with how long it has been. When it finished
  * without a draft: why, and for a failure a Try again that asks for a new draft. `compact` is the
  * one-line form shown above a draft that is still pending while a newer run works. A working step

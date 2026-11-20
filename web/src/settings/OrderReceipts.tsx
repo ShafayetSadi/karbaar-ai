@@ -30,8 +30,7 @@ function asTemplate(receipt: Receipt): Template {
 }
 
 /**
- * Whether confirming an order from a Messenger conversation sends the customer a receipt (ADR
- * 0038, MT6). The preview is the newest order's receipt, built by the server with the same code
+ * Whether confirming an order from a Messenger conversation sends the customer a receipt. The preview is the newest order's receipt, built by the server with the same code
  * that sends one.
  */
 export function OrderReceipts({ access }: { access: StoreNotesAccess }) {

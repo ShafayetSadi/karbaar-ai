@@ -7,7 +7,7 @@ import { useAuth, type Me } from '../auth/AuthProvider';
 import { ActionButton, Field, FormError } from '../components/ui';
 
 /**
- * The shop's name, for the owner (ADR 0059).
+ * The shop's name, for the owner.
  */
 export function ShopName({ me }: { me: Me }) {
   const { t } = useTranslation();

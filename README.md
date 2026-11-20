@@ -12,40 +12,30 @@ This repository is a **demo** with two parts:
 - `agent/`: the AI sales assistant, a small Python service that drafts replies with a real
   language model and tools over the shop's catalog, stock and delivery fees.
 
-## Run the dashboard
+## Run it
 
-Needs Node 24+ and pnpm.
-
-```sh
-cd web
-pnpm install
-pnpm dev
-```
-
-Open the URL it prints. Reloading the page resets the demo. Without the agent, the Inbox uses
-pre-written drafts.
-
-## Run with the live AI agent
-
-Needs Python 3.12+, [uv](https://docs.astral.sh/uv/) and an API key for any OpenAI-compatible
-model with tool calling (OpenAI, Gemini or OpenRouter; see `agent/.env.example`).
+Needs Node 24+ with pnpm, Python 3.12+ with [uv](https://docs.astral.sh/uv/), and
+[just](https://just.systems).
 
 ```sh
-# terminal 1
-cd agent
-uv sync
-export KARBAAR_LLM_API_KEY=...            # e.g. a Gemini key
-export KARBAAR_LLM_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
-export KARBAAR_LLM_MODEL=gemini-3.1-flash-lite
-uv run uvicorn karbaar_agent.server:app --port 8000
-
-# terminal 2
-cd web
-VITE_AGENT_URL=http://localhost:8000 pnpm dev
+cp agent/.env.example agent/.env   # add a model API key (OpenAI, Gemini or OpenRouter)
+just dev                           # installs everything, starts the agent and the dashboard
 ```
 
-In the Inbox, open a chat, press the sparkle button and choose **New draft**. You can also try
-the agent without the dashboard: `uv run karbaar-agent examples/stock_question.json`.
+Open the URL the dashboard prints. Without a key in `agent/.env`, `just dev` starts only the
+dashboard and the Inbox uses pre-written drafts. Reloading the page resets the demo.
+
+In the Inbox, open a chat, press the sparkle button and choose **New draft**.
+
+Other recipes (`just` lists them all):
+
+| Recipe | What it does |
+|---|---|
+| `just web` | The dashboard alone, with pre-written drafts |
+| `just agent` | The agent's HTTP API alone (`POST /draft`) |
+| `just draft` | One draft from `agent/examples/stock_question.json`, printed as JSON |
+| `just test` | The agent's tests and the dashboard's type-check |
+| `just build` | A production build of the dashboard |
 
 ## How the agent works
 
@@ -64,7 +54,6 @@ The model writes the words. Code owns the facts.
 
 It replies in the customer's language: Bangla, Banglish or English.
 
-Tests: `cd agent && uv run pytest`.
 
 ## How the demo works
 

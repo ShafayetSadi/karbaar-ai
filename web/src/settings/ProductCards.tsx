@@ -12,7 +12,7 @@ type Card = components['schemas']['ProductCardRead'];
 
 /**
  * Whether taps on product cards are answered at once by code: "বিস্তারিত" with photos and a
- * summary, "এটি নিতে চাই" with a choice of size (ADR 0038). Off, a tap reaches the AI like a typed
+ * summary, "এটি নিতে চাই" with a choice of size. Off, a tap reaches the AI like a typed
  * message. The preview is one card built by the server from the newest product, so it matches
  * what a customer gets.
  */

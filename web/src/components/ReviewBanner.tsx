@@ -10,7 +10,7 @@ function localPhone(e164: string): string {
   return national.length === 11 ? `${national.slice(0, 5)}-${national.slice(5)}` : national;
 }
 
-/** Where the shop is in staff review (ADR 0060). Nothing once approved. */
+/** Where the shop is in staff review. Nothing once approved. */
 export function ReviewBanner() {
   const { t } = useTranslation();
   const { status, note, phone } = useApproval();

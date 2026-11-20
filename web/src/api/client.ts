@@ -11,7 +11,7 @@ const CSRF_HEADER = 'X-CSRF-Protection';
 const csrf: Middleware = {
   onResponse({ request, response }) {
     if (response.status === 401 && !new URL(request.url).pathname.startsWith('/v1/auth/')) {
-      window.dispatchEvent(new Event('commerce-os:session-expired'));
+      window.dispatchEvent(new Event('karbaar:session-expired'));
     }
     return response;
   },

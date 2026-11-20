@@ -2,7 +2,7 @@ import { parseCount } from '../i18n/format';
 import type { ProductType } from './presets';
 
 /**
- * How a product is sold (ADR 0022). `pre_order` and `made_to_order` differ only in the wording the
+ * How a product is sold. `pre_order` and `made_to_order` differ only in the wording the
  * customer hears; the lead time is the days until the item is ready to hand to delivery.
  */
 export const AVAILABILITIES = ['in_stock', 'pre_order', 'made_to_order'] as const;

@@ -30,7 +30,7 @@ interface AuthContextValue {
     /** Exactly one proof: the one the API's signup options ask for. */
     phoneProof?: string;
     emailProof?: string;
-    /** From a signup invite link (ADR 0081): it proves the email, so no email proof goes with it. */
+    /** From a signup invite link: it proves the email, so no email proof goes with it. */
     inviteToken?: string;
     facebookUrl: string;
     address: SignupAddress;
@@ -128,8 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const expired = () => setState({ status: 'anonymous' });
-    window.addEventListener('commerce-os:session-expired', expired);
-    return () => window.removeEventListener('commerce-os:session-expired', expired);
+    window.addEventListener('karbaar:session-expired', expired);
+    return () => window.removeEventListener('karbaar:session-expired', expired);
   }, []);
 
   const value = useMemo<AuthContextValue>(() => {

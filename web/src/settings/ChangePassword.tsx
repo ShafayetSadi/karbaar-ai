@@ -7,7 +7,7 @@ import { ActionButton, Field, FormError } from '../components/ui';
 
 const MIN_LENGTH = 10;
 
-/** Asks for the current password, then signs every other device out (ADR 0059). */
+/** Asks for the current password, then signs every other device out. */
 export function ChangePassword() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);

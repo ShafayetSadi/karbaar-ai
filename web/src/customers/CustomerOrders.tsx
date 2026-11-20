@@ -35,7 +35,7 @@ function itemsSummary(order: Order): string {
 
 /**
  * The customer's latest orders, so the merchant sees at a glance whether this is a repeat buyer,
- * what they bought before and how those parcels ended (ADR 0034). Refetches when `refresh` changes
+ * what they bought before and how those parcels ended. Refetches when `refresh` changes
  * (a new order was just created). `children` go under the list: the create-order actions and form.
  *
  * On an order's own page, `excludeOrderId` leaves that order out and `record` is the order's

@@ -15,7 +15,7 @@ const TONES: Partial<Record<ConfirmationStatus, ChipTone>> = {
   needs_call: 'danger',
 };
 
-/** Where the Messenger confirmation request stands (ADR 0032): "Awaiting customer", "To call: no reply". */
+/** Where the Messenger confirmation request stands: "Awaiting customer", "To call: no reply". */
 export function ConfirmationBadge({
   confirmation,
 }: {

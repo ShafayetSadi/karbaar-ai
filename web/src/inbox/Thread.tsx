@@ -569,7 +569,7 @@ export function Thread({
           onSend={() => void send()}
           onSendVoiceNote={sendVoiceNote}
           attachments={attachments}
-          // Messenger, the only channel the inbox sends through today, shows cards (ADR 0038). A
+          // Messenger, the only channel the inbox sends through today, shows cards. A
           // channel without templates leaves `cards` out, so the composer does not offer them.
           cards={cards}
           generate={generate}

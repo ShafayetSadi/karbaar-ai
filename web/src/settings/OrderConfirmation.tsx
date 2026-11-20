@@ -11,8 +11,7 @@ import type { StoreNotesAccess } from './StoreNotes';
 type Request = components['schemas']['OrderConfirmationRequestRead'];
 
 /**
- * Whether an order taken in a Messenger conversation asks the customer to confirm it there (ADR
- * 0032, OC5). The preview is the newest order's request, built by the server with the same code
+ * Whether an order taken in a Messenger conversation asks the customer to confirm it there. The preview is the newest order's request, built by the server with the same code
  * that sends one.
  */
 export function OrderConfirmation({ access }: { access: StoreNotesAccess }) {

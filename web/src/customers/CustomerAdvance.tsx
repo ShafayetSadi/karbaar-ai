@@ -11,7 +11,7 @@ const POLICIES = ['', 'delivery_fee', 'fixed', 'full'] as const;
 type Policy = (typeof POLICIES)[number];
 
 /**
- * Ask this customer for an advance on every order (ADR 0034): the delivery fee, a fixed amount or
+ * Ask this customer for an advance on every order: the delivery fee, a fixed amount or
  * the full price. The quote and the AI then ask for that amount; neither the customer nor the AI
  * is told it is about them. `onChanged` runs after a save, so the caller can price again.
  */

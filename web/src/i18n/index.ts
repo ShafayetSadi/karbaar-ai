@@ -6,13 +6,13 @@ import en from './locales/en.json';
 export const LANGUAGES = ['en', 'bn'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-const STORAGE_KEY = 'commerce-os.language';
+const STORAGE_KEY = 'karbaar.language';
 
 function isLanguage(value: unknown): value is Language {
   return LANGUAGES.includes(value as Language);
 }
 
-/** A saved choice wins. Otherwise a Bangla browser starts in Bangla (ADR 0060). */
+/** A saved choice wins. Otherwise a Bangla browser starts in Bangla. */
 export function detectLanguage(
   stored: string | null,
   navigatorLanguage: string | undefined,
