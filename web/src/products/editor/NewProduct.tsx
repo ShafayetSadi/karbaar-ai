@@ -1,4 +1,3 @@
-import { useFeatures } from '../../entitlements/useFeatures';
 import { useUrlPanel } from '../../navigation/useUrlPanel';
 import { LeaveGuard } from '../../navigation/LeaveGuard';
 import { useFilePreviews } from '../useFilePreviews';
@@ -83,7 +82,6 @@ const isImage = (file: File) =>
 
 export function NewProduct() {
   const { t } = useTranslation();
-  const website = useFeatures().isEnabled('website', false);
   const navigate = useNavigate();
   const uploads = useImageUploads();
   const bypass = useRef(false);
@@ -119,7 +117,6 @@ export function NewProduct() {
   const [tiers, setTiers] = useState<TierDraft[]>([]);
   const [tierProblem, setTierProblem] = useState<TierProblem>();
   const [wholesaleOpen, setWholesaleOpen] = useState(false);
-  const [showOnStorefront, setShowOnStorefront] = useState(true);
 
   const [categoryId, setCategoryId] = useState('');
   const [baseSku, setBaseSku] = useState('');
@@ -269,7 +266,8 @@ export function NewProduct() {
           description: descText,
           aliases: parseAliases(String(form.get('aliases') ?? '')),
           product_type: type,
-          show_on_storefront: showOnStorefront,
+          // The API requires the field; the demo has no website to show products on.
+          show_on_storefront: true,
           ...(categoryId ? { category_id: categoryId } : {}),
           attributes: factsPayload(facts),
           ...availability.value,
@@ -553,22 +551,6 @@ export function NewProduct() {
                   </div>
                 ) : null}
               </div>
-
-              {website && (
-                <label className="flex items-start gap-2 text-sm text-ink">
-                  <input
-                    type="checkbox"
-                    checked={showOnStorefront}
-                    disabled={busy}
-                    onChange={(e) => setShowOnStorefront(e.target.checked)}
-                    className="mt-1"
-                  />
-                  <span>
-                    <span className="font-medium">{t('editor.showOnStorefront')}</span>
-                    <span className="block text-ink-muted">{t('editor.showOnStorefrontHint')}</span>
-                  </span>
-                </label>
-              )}
 
               <DescriptionEditor value={description} onChange={setDescription} name="description" />
             </Panel>

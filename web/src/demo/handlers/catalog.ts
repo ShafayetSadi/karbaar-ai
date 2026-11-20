@@ -374,8 +374,6 @@ function productMatches(p: Product, query: URLSearchParams, withSearch: boolean)
   if (category && p.category_id !== category) return false;
   const collection = query.get('collection_id');
   if (collection && !p.collection_ids.includes(collection)) return false;
-  const storefront = query.get('show_on_storefront');
-  if (storefront !== null && String(p.show_on_storefront) !== storefront) return false;
   if (!withSearch) return true;
   const stock = query.get('stock');
   if (stock && stockOf(p)?.state !== stock) return false;
@@ -450,7 +448,7 @@ on('post', '/v1/products', ({ body }) => {
     images: [],
     post_links: [],
     size_chart: [],
-    show_on_storefront: body.show_on_storefront,
+    show_on_storefront: true,
     status: 'active',
     track_inventory: body.track_inventory ?? body.availability === 'in_stock',
     stock: null,
@@ -493,7 +491,6 @@ on('patch', '/v1/products/{product_id}', ({ params, body }) => {
   if (body.min_order_quantity != null) p.min_order_quantity = body.min_order_quantity;
   if (body.max_order_quantity !== undefined) p.max_order_quantity = body.max_order_quantity;
   if (body.product_type != null) p.product_type = body.product_type;
-  if (body.show_on_storefront != null) p.show_on_storefront = body.show_on_storefront;
   if (body.status != null) p.status = body.status;
   if (body.track_inventory != null) p.track_inventory = body.track_inventory;
   return touch(p);

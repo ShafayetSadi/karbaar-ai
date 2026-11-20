@@ -47,9 +47,6 @@ function useListParams() {
     ? (typeParam as ProductType)
     : '';
   const stock = params.get('stock');
-  const storefrontParam = params.get('storefront');
-  const storefront: 'visible' | 'hidden' | '' =
-    storefrontParam === 'visible' || storefrontParam === 'hidden' ? storefrontParam : '';
   const filters = {
     q: (params.get('q') ?? '').trim(),
     status: params.get('status') === 'archived' ? ('archived' as const) : ('active' as const),
@@ -58,7 +55,6 @@ function useListParams() {
     collectionId: params.get('collection') ?? '',
     stock: stock === 'low' || stock === 'out' ? (stock as StockFilter) : null,
     sort: params.get('sort') === 'stock' ? ('stock' as const) : ('newest' as const),
-    storefront,
   };
   /** Sets (or, for null and '', drops) several parameters in one URL change. */
   const set = useCallback(
@@ -89,7 +85,7 @@ function typingInField(target: EventTarget | null) {
 export function ProductsPage() {
   const { t } = useTranslation();
   const [filters, setParams] = useListParams();
-  const { q: search, status, type, categoryId, collectionId, stock, sort, storefront } = filters;
+  const { q: search, status, type, categoryId, collectionId, stock, sort } = filters;
   const [selected, setSelected] = useState<string[]>([]);
   const lastClicked = useRef<number | null>(null);
   const [rowError, setRowError] = useState<ApiError | null>(null);
@@ -98,8 +94,7 @@ export function ProductsPage() {
   const collections = useGroups('collections');
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isEnabled, limitOf, currentOf, isLimitReached } = useFeatures();
-  const website = isEnabled('website', false);
+  const { limitOf, currentOf, isLimitReached } = useFeatures();
   const productsLimit = limitOf('products_max');
   const productsLimitReached = isLimitReached('products_max');
 
@@ -114,19 +109,11 @@ export function ProductsPage() {
   );
   const onSearch = useCallback((q: string) => changeFilters({ q }), [changeFilters]);
 
-  const showOnStorefront = website
-    ? storefront === 'visible'
-      ? true
-      : storefront === 'hidden'
-        ? false
-        : undefined
-    : undefined;
   const groupFilters = {
     status,
     product_type: type || undefined,
     category_id: categoryId || undefined,
     collection_id: collectionId || undefined,
-    show_on_storefront: showOnStorefront,
   };
   const listFilters = { ...groupFilters, q: search || undefined, stock: stock ?? undefined, sort };
   // Cached per filter set: coming back to the list shows it at once while it refetches. Each
@@ -280,7 +267,7 @@ export function ProductsPage() {
           filters={filters}
           onSearch={onSearch}
           onFilter={(key, value) => changeFilters({ [key]: value })}
-          onClear={() => changeFilters({ type: null, sort: null, storefront: null })}
+          onClear={() => changeFilters({ type: null, sort: null })}
           view={view}
           onView={setView}
         />
@@ -384,19 +371,9 @@ export function ProductsPage() {
             )}
           >
             {view === 'grid' ? (
-              <ProductGrid
-                website={website}
-                items={items}
-                selection={selection}
-                onDuplicate={duplicate}
-              />
+              <ProductGrid items={items} selection={selection} onDuplicate={duplicate} />
             ) : (
-              <ProductTable
-                website={website}
-                items={items}
-                selection={selection}
-                onDuplicate={duplicate}
-              />
+              <ProductTable items={items} selection={selection} onDuplicate={duplicate} />
             )}
           </div>
         ) : null}

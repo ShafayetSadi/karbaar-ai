@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
@@ -6,7 +5,6 @@ import { call } from '../api/call';
 import { unwrap } from '../api/query';
 import { useAuth } from '../auth/AuthProvider';
 import { ActionButton, Skeleton, actionButtonClass } from '../components/ui';
-import { useFeatures } from '../entitlements/useFeatures';
 import { dhakaDay, formatAge, formatInteger } from '../i18n/format';
 import { RecentOrders, TodayBlock } from './HomeBlocks';
 import { AiSummary } from './AiSummary';
@@ -34,20 +32,6 @@ function oldest(row: Row, now = Date.now()) {
 export function HomePage() {
   const { t } = useTranslation();
   const { state } = useAuth();
-  const features = useFeatures();
-  useEffect(() => {
-    const refresh = () => {
-      if (document.visibilityState === 'visible') features.reload();
-    };
-    const timer = window.setInterval(refresh, 60_000);
-    window.addEventListener('focus', refresh);
-    document.addEventListener('visibilitychange', refresh);
-    return () => {
-      window.clearInterval(timer);
-      window.removeEventListener('focus', refresh);
-      document.removeEventListener('visibilitychange', refresh);
-    };
-  }, [features.reload]);
   const conversations = useAttentionSource('conversations', async () => {
     const counts = unwrap(await call(() => api.GET('/v1/conversations/counts')));
     return [
@@ -83,7 +67,6 @@ export function HomePage() {
       { label: 'readySoon', count: counts.ready_soon, to: '/orders?tab=readySoon' },
       { label: 'toChase', count: counts.to_chase, to: '/orders?tab=toChase' },
       { label: 'toCall', count: counts.to_call, to: '/orders?tab=toCall' },
-      { label: 'needsReview', count: counts.needs_review, to: '/orders?tab=needsReview' },
     ];
   });
   const confirmation = useAttentionSource('confirmation', async () => {
@@ -103,20 +86,11 @@ export function HomePage() {
     { key: 'stock', query: stock },
   ];
   const visibleRows = (rows: Row[] = []) =>
-    rows.filter(
-      (row) =>
-        row.count > 0 &&
-        (row.label !== 'toCall' || confirmation.data === true) &&
-        (row.label !== 'needsReview' ||
-          (!features.loading && !features.failed && features.isEnabled('courier_booking', false))),
-    );
+    rows.filter((row) => row.count > 0 && (row.label !== 'toCall' || confirmation.data === true));
   const allHandled =
     sources.every(
       ({ query }) => query.isSuccess && !query.isError && visibleRows(query.data).length === 0,
-    ) &&
-    confirmation.isSuccess &&
-    !features.loading &&
-    !features.failed;
+    ) && confirmation.isSuccess;
   const owner = state.status === 'authenticated' && state.me.role === 'owner';
   return (
     <div className="min-w-0 space-y-6">
@@ -181,19 +155,13 @@ export function HomePage() {
             )}
           </div>
         ))}
-        {(confirmation.isError || features.failed) && (
+        {confirmation.isError && (
           <div
             role="alert"
             className="flex flex-wrap items-center gap-2 border-t border-line p-4 text-sm text-ink-muted"
           >
             <span>{t('home.errors.settings')}</span>
-            <ActionButton
-              className="min-h-11"
-              onClick={() => {
-                void confirmation.refetch();
-                features.reload();
-              }}
-            >
+            <ActionButton className="min-h-11" onClick={() => void confirmation.refetch()}>
               {t('home.retry')}
             </ActionButton>
           </div>

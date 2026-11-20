@@ -63,9 +63,6 @@ type Feature = {
     | 'auto_mode_allowed'
     | 'catalog_import'
     | 'history_import'
-    | 'website'
-    | 'web_chat'
-    | 'courier_booking'
     | 'page_connect_before_meta_live'
     | 'ai_daily_token_budget'
     | 'team_members_max'
@@ -84,9 +81,6 @@ on('get', '/v1/merchants/me/features', () => ({
     flag('auto_mode_allowed', false),
     flag('catalog_import', false),
     flag('history_import', false),
-    flag('website', false),
-    flag('web_chat', false),
-    flag('courier_booking', false),
     flag('page_connect_before_meta_live', true),
     { key: 'ai_monthly_allowance', kind: 'limit', value: null },
     { key: 'ai_daily_token_budget', kind: 'limit', value: null },

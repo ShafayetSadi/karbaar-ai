@@ -8,9 +8,6 @@ export type FeatureKey =
   | 'auto_mode_allowed'
   | 'catalog_import'
   | 'history_import'
-  | 'website'
-  | 'web_chat'
-  | 'courier_booking'
   // Despite the key, the API resolves this to "Page connection is open": the platform switch
   // META_PAGE_CONNECT_OPEN, or staff's exemption for this shop.
   | 'page_connect_before_meta_live'

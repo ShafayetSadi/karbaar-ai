@@ -1,4 +1,3 @@
-import { useFeatures } from '../entitlements/useFeatures';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDownUp, Download, Filter, Plus, RefreshCw, SearchX, ShoppingBag } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -18,8 +17,6 @@ import {
   cx,
   fieldClass,
 } from '../components/ui';
-import { useApproval } from '../auth/useApproval';
-import { ApprovalLock } from '../components/ApprovalLock';
 import { useMediaQuery } from '../components/useMediaQuery';
 import { DeliveryRecordChip } from '../customers/DeliveryRecordChip';
 import { SearchBox } from '../inbox/SearchBox';
@@ -33,9 +30,7 @@ import { CustomerInitials, OrderThumb } from './OrderRowMedia';
 import { StatusCards, STATUS_CARDS, type StatusCard } from './StatusCards';
 import { ToChaseList } from './ToChaseList';
 import type { Order, OrderRow, OrderStatus } from './orderForm';
-import { can } from './orderActions';
 import { BULK_OUTCOMES, canMarkOutcome, keyKeeper, type BulkOutcome } from './outcomes';
-import type { CourierConnection } from './shipments';
 
 // `processing` has no tab: it is a short step between confirmed and shipped.
 const TABS = [
@@ -48,26 +43,21 @@ const TABS = [
   'shipped',
   'delivered',
   'returned',
-  'needsReview',
   'cancelled',
 ] as const;
 type Tab = (typeof TABS)[number];
 
-const SOURCES = ['all', 'storefront', 'web_chat', 'messenger', 'dashboard'] as const;
+const SOURCES = ['all', 'messenger', 'dashboard'] as const;
 type SourceFilter = (typeof SOURCES)[number];
 
 type BulkResult = { accepted: number; refused: { number: number | null; code: string }[] };
-/** Each selected order's answer to "Book with …", shown on its row. */
-type Booked = Map<string, { ok: true } | { ok: false; message: string }>;
 
 /** The tabs that show how many orders wait in them, and the API count behind each. */
-const ACTION_COUNTS: Partial<Record<Tab, 'to_call' | 'to_chase' | 'ready_soon' | 'needs_review'>> =
-  {
-    toCall: 'to_call',
-    toChase: 'to_chase',
-    readySoon: 'ready_soon',
-    needsReview: 'needs_review',
-  };
+const ACTION_COUNTS: Partial<Record<Tab, 'to_call' | 'to_chase' | 'ready_soon'>> = {
+  toCall: 'to_call',
+  toChase: 'to_chase',
+  readySoon: 'ready_soon',
+};
 
 /** The pills beside the status cards: the tabs that ask the merchant to act. */
 const ACTION_TABS = TABS.filter((value) => value in ACTION_COUNTS);
@@ -80,14 +70,9 @@ function readySoonCutoff(): string {
   return dhakaDay(Date.now() + (READY_SOON_DAYS + 1) * 24 * 60 * 60 * 1000);
 }
 
-/** Orders a bulk button applies to: the order's `allowed_actions` list what that button does. */
-function canBookInBulk(order: OrderRow): boolean {
-  return can(order, 'book_courier');
-}
-
 /** Orders the list lets the merchant select: at least one bulk button applies to them. */
 function canSelect(order: OrderRow): boolean {
-  return canBookInBulk(order) || BULK_OUTCOMES.some((outcome) => canMarkOutcome(order, outcome));
+  return BULK_OUTCOMES.some((outcome) => canMarkOutcome(order, outcome));
 }
 
 /** The API filters behind a tab. */
@@ -95,12 +80,9 @@ function filterOf(tab: Tab): {
   status?: OrderStatus;
   ready_by_before?: string;
   confirmation?: 'needs_call';
-  shipment?: 'needs_review';
 } {
   if (tab === 'all') return {};
   if (tab === 'toChase') return {};
-  // Courier shipments the merchant must look at: unknown outcome, partial, cancelled after booking.
-  if (tab === 'needsReview') return { shipment: 'needs_review' };
   // Orders the customer did not confirm in Messenger: the merchant phones them.
   if (tab === 'toCall') return { confirmation: 'needs_call' };
   if (tab === 'readySoon') return { status: 'confirmed', ready_by_before: readySoonCutoff() };
@@ -108,24 +90,13 @@ function filterOf(tab: Tab): {
 }
 
 export function OrdersPage() {
-  const features = useFeatures();
-  const courierBooking = features.isEnabled('courier_booking', false);
   const { t } = useTranslation();
-  const { locked } = useApproval();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const requestedTab = params.get('tab') as Tab;
-  const tab: Tab =
-    TABS.includes(requestedTab) && (requestedTab !== 'needsReview' || courierBooking)
-      ? requestedTab
-      : 'all';
-  const website = features.isEnabled('website', false);
-  const webChat = features.isEnabled('web_chat', false);
-  const availableSources = SOURCES.filter(
-    (s) => (website || s !== 'storefront') && (webChat || s !== 'web_chat'),
-  );
+  const tab: Tab = TABS.includes(requestedTab) ? requestedTab : 'all';
   const requestedSource = params.get('source') as SourceFilter;
-  const source: SourceFilter = availableSources.includes(requestedSource) ? requestedSource : 'all';
+  const source: SourceFilter = SOURCES.includes(requestedSource) ? requestedSource : 'all';
   const [loadedPages, setLoadedPages] = useState(0);
   const requestedPages = Math.max(1, Math.min(100, Number(params.get('pages')) || 1));
   const search = params.get('q') ?? '';
@@ -164,13 +135,6 @@ export function OrdersPage() {
   const [bulkResult, setBulkResult] = useState<BulkResult | null>(null);
   const [bulkError, setBulkError] = useState<ApiError | null>(null);
   const bulkKeys = useRef(keyKeeper());
-  const [couriers, setCouriers] = useState<CourierConnection[]>([]);
-  const [booked, setBooked] = useState<Booked>(new Map());
-  const [bookedSummary, setBookedSummary] = useState<{
-    courier: string;
-    accepted: number;
-    refused: number;
-  } | null>(null);
 
   // Only the newest request may fill the list: an older, slower answer for another tab or search
   // must not replace it.
@@ -273,25 +237,10 @@ export function OrdersPage() {
     setParams,
   ]);
 
-  useEffect(() => {
-    // No couriers (or none on this server): the list simply offers no booking.
-    if (!courierBooking) return;
-    void call(() => api.GET('/v1/courier-connections')).then((result) => {
-      if (result.ok) setCouriers(result.data.items.filter((c) => c.status === 'active'));
-    });
-  }, [courierBooking]);
-
-  // Narrow screens fold the chips and courier under the customer instead of giving them columns.
+  // Narrow screens fold the chips under the customer instead of giving them columns.
   const wide = useMediaQuery('(min-width: 48rem)');
   const columns = wide
-    ? ([
-        'number',
-        'customer',
-        'total',
-        'status',
-        ...(courierBooking ? ['courier' as const] : []),
-        'placed',
-      ] as const)
+    ? (['number', 'customer', 'total', 'status', 'placed'] as const)
     : (['number', 'customer', 'total'] as const);
   // Wide rows are one line tall, so their cells centre; narrow rows stack, so they start at the top.
   const cellAlign = wide ? 'align-middle' : 'align-top';
@@ -319,8 +268,6 @@ export function OrdersPage() {
   function resetSelection() {
     setSelected(new Set());
     setBulkResult(null);
-    setBooked(new Map());
-    setBookedSummary(null);
   }
 
   // Load the next page as the end of the list scrolls into view; "Load more" stays as the fallback.
@@ -404,43 +351,6 @@ export function OrdersPage() {
     refreshCounts();
   }
 
-  async function bookSelected(courier: CourierConnection) {
-    const orderIds = items
-      .filter((order) => selected.has(order.id) && canBookInBulk(order))
-      .map((order) => order.id);
-    if (orderIds.length === 0) return;
-    const key = bulkKeys.current.key(`book|${courier.id}|${orderIds.join(',')}`);
-    setBulkBusy(true);
-    setBulkError(null);
-    setBulkResult(null);
-    setBookedSummary(null);
-    const result = await call(() =>
-      api.POST('/v1/shipments/bulk', {
-        params: { header: { 'Idempotency-Key': key } },
-        body: { order_ids: orderIds, connection_id: courier.id },
-      }),
-    );
-    bulkKeys.current.settle(!result.ok && result.error.code === 'NETWORK_ERROR');
-    setBulkBusy(false);
-    if (!result.ok) {
-      // A problem with the courier account itself: nothing was booked.
-      setBulkError(result.error);
-      return;
-    }
-    const answers: Booked = new Map();
-    for (const a of result.data.accepted) answers.set(a.order_id, { ok: true });
-    for (const r of result.data.refused) answers.set(r.order_id, { ok: false, message: r.message });
-    setBooked(answers);
-    setBookedSummary({
-      courier: courier.label,
-      accepted: result.data.accepted.length,
-      refused: result.data.refused.length,
-    });
-    setSelected(new Set());
-    await load(tab, null, search, sort, source);
-    refreshCounts();
-  }
-
   function refresh() {
     void load(tab, null, search, sort, source);
     refreshCounts();
@@ -455,7 +365,6 @@ export function OrdersPage() {
   const exportHref = `/v1/orders/export.csv${exportQuery}`;
   const canMarkSelected = (outcome: BulkOutcome) =>
     items.some((order) => selected.has(order.id) && canMarkOutcome(order, outcome));
-  const bookable = items.some((order) => selected.has(order.id) && canBookInBulk(order));
 
   const showSkeleton = loading && items.length === 0 && !failed;
 
@@ -478,19 +387,11 @@ export function OrdersPage() {
             title={t('orders.refresh')}
             aria-label={t('orders.refresh')}
           />
-          {/* A plain same-origin GET: the session cookie goes with it and the browser downloads.
-              The export has no courier filter, so the Needs review tab offers none. */}
-          {tab !== 'needsReview' && (
-            <a
-              href={exportHref}
-              download
-              title={t('orders.export')}
-              className={actionButtonClass()}
-            >
-              <Download aria-hidden className="size-4" />
-              <span className="max-sm:sr-only">{t('orders.export')}</span>
-            </a>
-          )}
+          {/* A plain same-origin GET: the session cookie goes with it and the browser downloads. */}
+          <a href={exportHref} download title={t('orders.export')} className={actionButtonClass()}>
+            <Download aria-hidden className="size-4" />
+            <span className="max-sm:sr-only">{t('orders.export')}</span>
+          </a>
           <Link
             to="/orders/new"
             title={t('orders.newShortcut')}
@@ -514,19 +415,17 @@ export function OrdersPage() {
           label={t('orders.filters')}
           value={tab}
           onChange={changeTab}
-          tabs={ACTION_TABS.filter((value) => value !== 'needsReview' || courierBooking).map(
-            (value) => {
-              const field = ACTION_COUNTS[value];
-              const count = field ? counts?.[field] : undefined;
-              return {
-                value,
-                label: t(`orders.tab.${value}`),
-                count: count || null,
-                countLabel: t('orders.tabCount', { count: count ?? 0 }),
-                countTone: 'warn' as const,
-              };
-            },
-          )}
+          tabs={ACTION_TABS.map((value) => {
+            const field = ACTION_COUNTS[value];
+            const count = field ? counts?.[field] : undefined;
+            return {
+              value,
+              label: t(`orders.tab.${value}`),
+              count: count || null,
+              countLabel: t('orders.tabCount', { count: count ?? 0 }),
+              countTone: 'warn' as const,
+            };
+          })}
         />
       </div>
 
@@ -551,7 +450,7 @@ export function OrdersPage() {
               aria-label={t('orders.sourceFilter.label')}
               className={cx('flex-1 py-2 text-sm sm:flex-none', fieldClass)}
             >
-              {availableSources.map((s) => (
+              {SOURCES.map((s) => (
                 <option key={s} value={s}>
                   {t(`orders.sourceFilter.${s}`)}
                 </option>
@@ -587,17 +486,6 @@ export function OrdersPage() {
                     .map((r) => (r.number === null ? r.code : `#${r.number}`))
                     .join(', '),
                 })}`}
-            </p>
-          )}
-
-          {bookedSummary && (
-            <p role="status" className="mt-4 rounded-md bg-panel-muted px-3 py-2 text-sm text-ink">
-              {t('orders.bulk.booked', {
-                count: bookedSummary.accepted,
-                courier: bookedSummary.courier,
-              })}
-              {bookedSummary.refused > 0 &&
-                ` ${t('orders.bulk.notBooked', { count: bookedSummary.refused })}`}
             </p>
           )}
 
@@ -727,10 +615,7 @@ export function OrdersPage() {
                                   <span className="mb-1 block text-xs text-ink-faint tabular-nums">
                                     {formatDateTime(order.created_at)}
                                   </span>
-                                  <OrderChips order={order} webChat={webChat} />
-                                  {courierBooking && (
-                                    <CourierCell order={order} answer={booked.get(order.id)} />
-                                  )}
+                                  <OrderChips order={order} />
                                 </span>
                               )}
                             </td>
@@ -752,13 +637,8 @@ export function OrdersPage() {
                             {wide && (
                               <>
                                 <td className="px-3 py-2.5 align-middle">
-                                  <OrderChips order={order} webChat={webChat} />
+                                  <OrderChips order={order} />
                                 </td>
-                                {courierBooking && (
-                                  <td className="px-3 py-2.5 align-middle">
-                                    <CourierCell order={order} answer={booked.get(order.id)} />
-                                  </td>
-                                )}
                                 <td className="px-3 py-2.5 align-middle tabular-nums text-xs whitespace-nowrap text-ink-muted">
                                   {formatDateTime(order.created_at)}
                                 </td>
@@ -807,20 +687,6 @@ export function OrdersPage() {
                     {t(`orders.bulk.${outcome}`)}
                   </ActionButton>
                 ))}
-                {courierBooking &&
-                  bookable &&
-                  couriers.map((courier) => (
-                    <ActionButton
-                      key={courier.id}
-                      size="sm"
-                      tone="primary"
-                      disabled={bulkBusy || locked}
-                      onClick={() => void bookSelected(courier)}
-                    >
-                      {t('orders.bulk.bookWith', { courier: courier.label })}
-                    </ActionButton>
-                  ))}
-                {courierBooking && bookable && locked && <ApprovalLock />}
                 <ActionButton size="sm" disabled={bulkBusy} onClick={() => setSelected(new Set())}>
                   {t('orders.bulk.clear')}
                 </ActionButton>
@@ -834,20 +700,11 @@ export function OrdersPage() {
 }
 
 /** What is going on with an order, as a row of chips. */
-function OrderChips({ order, webChat }: { order: Order; webChat: boolean }) {
+function OrderChips({ order }: { order: Order }) {
   const { t } = useTranslation();
   return (
     <span className="flex flex-wrap items-center gap-1">
       <StatusBadge status={order.status} />
-      {order.source === 'storefront' && (
-        <Chip tone="neutral">{t('orders.sourceBadge.storefront')}</Chip>
-      )}
-      {webChat && order.source === 'web_chat' && (
-        <Chip tone="neutral">{t('orders.sourceBadge.web_chat')}</Chip>
-      )}
-      {order.source === 'storefront' && !order.phone_verified_at && (
-        <Chip tone="warn">{t('orders.phoneNotVerified')}</Chip>
-      )}
       <ConfirmationBadge confirmation={order.confirmation} />
       {order.is_partial_delivery && <Chip tone="warn">{t('orders.outcome.partialChip')}</Chip>}
       <ReadyBadge order={order} />
@@ -908,37 +765,5 @@ function typingInField(target: EventTarget | null) {
   return (
     target instanceof HTMLElement &&
     (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
-  );
-}
-
-/** The order's newest courier booking in brief, and the answer to a bulk booking just made. */
-function CourierCell({
-  order,
-  answer,
-}: {
-  order: Order;
-  answer: { ok: true } | { ok: false; message: string } | undefined;
-}) {
-  const { t } = useTranslation();
-  const shipment = order.shipment;
-  return (
-    <span className="block text-xs">
-      {shipment && (
-        <span className="flex flex-wrap items-center gap-1">
-          <span className="text-ink-muted">
-            {t(`couriers.providers.${shipment.provider}`, { defaultValue: shipment.provider })}
-          </span>
-          <Chip tone={shipment.needs_review_reason ? 'warn' : 'neutral'}>
-            {shipment.needs_review_reason
-              ? t('orders.tab.needsReview')
-              : t(`shipments.status.${shipment.status}`, { defaultValue: shipment.status })}
-          </Chip>
-          {shipment.tracking_code && (
-            <span className="font-mono text-ink">{shipment.tracking_code}</span>
-          )}
-        </span>
-      )}
-      {answer && !answer.ok && <span className="mt-1 block text-danger-ink">{answer.message}</span>}
-    </span>
   );
 }

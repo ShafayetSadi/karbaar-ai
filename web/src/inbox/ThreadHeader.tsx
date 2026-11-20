@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useId } from 'react';
 import { useTakeoverSettings } from '../settings/useTakeoverSettings';
-import { useFeatures } from '../entitlements/useFeatures';
 import { useTranslation } from 'react-i18next';
 import { ActionButton, IconButton, SelectMenu, cx } from '../components/ui';
 import type { components } from '../api/schema';
@@ -58,7 +57,6 @@ export function ThreadHeader({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const webChatEnabled = useFeatures().isEnabled('web_chat', false);
   const now = useMinuteClock();
   const snoozedUntil = isSnoozed(conversation.snoozed_until, now)
     ? conversation.snoozed_until
@@ -82,22 +80,15 @@ export function ThreadHeader({
             name={conversation.customer_name}
             photoUrl={conversation.customer_photo_url}
             size="sm"
-            channel={conversation.channel === 'web' ? 'web' : 'messenger'}
+            channel
           />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-2">
             <h2 className="truncate leading-snug font-semibold text-ink">
-              {conversation.customer_name ??
-                (conversation.channel === 'web'
-                  ? t('inbox.websiteVisitor')
-                  : t('inbox.unknownCustomer'))}
+              {conversation.customer_name ?? t('inbox.unknownCustomer')}
             </h2>
-            {conversation.channel !== 'web' || webChatEnabled ? (
-              <span className="sr-only">
-                {t(`inbox.channel.${conversation.channel === 'web' ? 'web' : 'messenger'}`)}
-              </span>
-            ) : null}
+            <span className="sr-only">{t('inbox.channel.messenger')}</span>
           </div>
           <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-ink-muted">
             <HandlerStatus

@@ -1,5 +1,5 @@
 import { MediaImage } from '../components/MediaImage';
-import { Globe, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { cx } from '../components/ui';
 import { useStableSrc } from '../components/useStableSrc';
 import { initials } from './initials';
@@ -12,8 +12,7 @@ const SIZES = {
 
 /**
  * The customer's Messenger photo, or their initials when there is none or it cannot load. With
- * `channel`, a small badge for where they write sits at the bottom-left: Messenger (`true` or
- * `'messenger'`) or the website chat (`'web'`).
+ * `channel`, a small Messenger badge sits at the bottom-left.
  */
 export function CustomerAvatar({
   name,
@@ -24,7 +23,7 @@ export function CustomerAvatar({
   name: string | null;
   photoUrl: string | null;
   size?: keyof typeof SIZES;
-  channel?: boolean | 'messenger' | 'web';
+  channel?: boolean;
 }) {
   const { src, onError } = useStableSrc(photoUrl);
   const box = cx(SIZES[size], 'shrink-0 rounded-full border border-line');
@@ -56,14 +55,10 @@ export function CustomerAvatar({
         aria-hidden="true"
         className={cx(
           'absolute -bottom-0.5 -left-0.5 flex size-4 items-center justify-center rounded-full ring-2 ring-panel',
-          channel === 'web' ? 'bg-ink text-panel' : 'bg-messenger text-messenger-ink',
+          'bg-messenger text-messenger-ink',
         )}
       >
-        {channel === 'web' ? (
-          <Globe className="size-2.5" />
-        ) : (
-          <MessageCircle className="size-2.5" />
-        )}
+        <MessageCircle className="size-2.5" />
       </span>
     </span>
   );

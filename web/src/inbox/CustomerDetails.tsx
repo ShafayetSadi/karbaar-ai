@@ -388,10 +388,7 @@ export function CustomerDetails({
             <dt className="text-ink-faint">{t('inbox.firstSeen')}</dt>
             <dd className="text-ink">
               {t(`inbox.channel.${customer.first_seen_channel}`, {
-                defaultValue:
-                  customer.first_seen_channel === 'storefront'
-                    ? 'Website'
-                    : customer.first_seen_channel,
+                defaultValue: customer.first_seen_channel,
               })}
             </dd>
           </>

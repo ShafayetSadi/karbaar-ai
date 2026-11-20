@@ -1,4 +1,3 @@
-import { ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../api/client';
@@ -30,8 +29,6 @@ export function DetailsPanel({ product, onChange }: { product: Product; onChange
   const { draft, setDraft, dirty, stale, settle, reset } = useDraft(product, detailsOf);
   const [nameError, setNameError] = useState<string>();
   const edit = (patch: Partial<typeof draft>) => setDraft({ ...draft, ...patch });
-
-  const productWebUrl: string | null = null;
 
   useDraftSection({
     id: 'details',
@@ -119,21 +116,6 @@ export function DetailsPanel({ product, onChange }: { product: Product; onChange
           </label>
           <p className="mt-1 text-xs text-ink-faint">{t('editor.typeHint')}</p>
         </div>
-      </div>
-      <div className="space-y-1">
-        {productWebUrl && (
-          <div className="pl-6 text-xs">
-            <a
-              href={productWebUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 font-medium text-active hover:underline"
-            >
-              <span>{t('editor.viewOnWebsite', { defaultValue: 'View on website' })}</span>
-              <ExternalLink className="size-3" />
-            </a>
-          </div>
-        )}
       </div>
       <DescriptionEditor
         value={draft.description}

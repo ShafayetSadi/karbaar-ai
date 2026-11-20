@@ -1,12 +1,4 @@
 {
-  "courierProgress": {
-    "courierLink": "Track with the courier",
-    "pickedUp": "Picked up",
-    "title": "Courier reports",
-    "outForDelivery": "Out for delivery",
-    "timeUnknown": "Occurrence time unavailable",
-    "occurredAt": "Reported occurrence: {{date}}"
-  },
   "orderStatus": {
     "unavailable": "Order status is unavailable. Ask the shop for help.",
     "loading": "Loading order status…",
@@ -26,8 +18,7 @@
     "progress": "Known progress",
     "source": {
       "recorded": "Status recorded",
-      "merchant": "Recorded by the shop",
-      "courier": "Reported by the courier"
+      "merchant": "Recorded by the shop"
     },
     "readyBy": "Recorded ready date: {{date}}",
     "deliveryDays": "Recorded delivery estimate after readiness: {{min}}–{{max}} days",
@@ -107,7 +98,6 @@
     "loadMore": "Load more",
     "loadFailed": "Could not load conversations.",
     "unknownCustomer": "Unknown customer",
-    "websiteVisitor": "Website visitor",
     "needsHuman": "Needs you",
     "unread_one": "{{count}} unread message",
     "unread_other": "{{count}} unread messages",
@@ -403,9 +393,7 @@
     },
     "channel": {
       "messenger": "Messenger",
-      "dashboard": "Dashboard",
-      "web": "Website chat",
-      "storefront": "Website"
+      "dashboard": "Dashboard"
     },
     "done": "Done",
     "showPanel": "Show customer details",
@@ -676,16 +664,14 @@
       "shipped": "Shipped",
       "delivered": "Delivered",
       "returned": "Returned",
-      "cancelled": "Cancelled",
-      "needsReview": "Needs review"
+      "cancelled": "Cancelled"
     },
     "col": {
       "number": "Order",
       "customer": "Customer",
       "total": "Total",
       "status": "Status",
-      "placed": "Placed",
-      "courier": "Courier"
+      "placed": "Placed"
     },
     "status": {
       "pending": "Pending",
@@ -700,8 +686,7 @@
     },
     "from": {
       "messenger": "From Messenger",
-      "dashboard": "Entered here",
-      "storefront": "From Website"
+      "dashboard": "Entered here"
     },
     "number": "Order #{{number}}",
     "placedAt": "Placed {{when}}",
@@ -865,7 +850,7 @@
     "addressLine": "Address line",
     "outcome": {
       "title": "Delivery",
-      "hint": "Mark what happened to the parcel. A connected courier updates this by itself; mark it here when it can't.",
+      "hint": "Mark what happened to the parcel.",
       "shipped": "Mark shipped",
       "delivered": "Delivered",
       "returned": "Returned",
@@ -892,10 +877,7 @@
       "selectAll": "Select all orders on this page",
       "select": "Select order #{{number}}",
       "done": "{{count}} orders marked.",
-      "refused": "Not changed: {{orders}}.",
-      "bookWith": "Book with {{courier}}",
-      "booked": "{{count}} orders sent to {{courier}}.",
-      "notBooked": "{{count}} could not be booked; the reason is on each row."
+      "refused": "Not changed: {{orders}}."
     },
     "tierPrice": "{{quantity}}+ price",
     "savings": "Quantity savings",
@@ -931,16 +913,10 @@
     "newHint": "For an order taken by phone or in person. The price is worked out by the server as you add items.",
     "clearTab": "Show all orders",
     "newShortcut": "New order (N)",
-    "phoneNotVerified": "Phone not verified",
     "customerNote": "Customer note",
-    "sourceBadge": {
-      "storefront": "Website",
-      "web_chat": "Website chat"
-    },
     "credit": {
       "agent": "Closed by AI agent",
       "product_page": "Closed by Product page",
-      "storefront": "Closed by Website",
       "team": "Closed by {{name}}",
       "teamDefault": "Closed by Team",
       "formerTeammate": "Former teammate"
@@ -978,8 +954,6 @@
     "sourceFilter": {
       "label": "Source",
       "all": "All sources",
-      "storefront": "Website",
-      "web_chat": "Website chat",
       "messenger": "Messenger",
       "dashboard": "Dashboard"
     }
@@ -1090,12 +1064,7 @@
     "stockChange": "Change for {{name}}",
     "stockLess": "One less for {{name}}",
     "stockMore": "One more for {{name}}",
-    "shortcuts": "Shortcuts: / search · N new product · A select all shown · Esc clear selection",
-    "filterStorefront": "Website",
-    "filterStorefrontAll": "All",
-    "filterStorefrontVisible": "On website",
-    "filterStorefrontHidden": "Hidden",
-    "hiddenBadge": "Hidden"
+    "shortcuts": "Shortcuts: / search · N new product · A select all shown · Esc clear selection"
   },
   "settings": {
     "title": "Settings",
@@ -1125,7 +1094,7 @@
       },
       "channel": {
         "title": "Integrations",
-        "hint": "Connect your Facebook Page and courier accounts."
+        "hint": "Connect your Facebook Page."
       },
       "orders": {
         "title": "Orders & Stock",
@@ -1338,10 +1307,6 @@
     "sizeChartHint": "One picture of your size chart. The assistant tells customers it exists; you send it.",
     "addSizeChart": "Add size chart",
     "replaceSizeChart": "Choose another",
-    "showOnStorefront": "Show on website",
-    "shownOnStorefront": "Shown on website",
-    "showOnStorefrontHint": "Visible on your public store catalog and search.",
-    "viewOnWebsite": "View on website",
     "renameOption": "Rename option",
     "currentOptionName": "Current option name",
     "newOptionName": "New option name",
@@ -1506,12 +1471,6 @@
     "connectedAt": "connected {{when}}",
     "broken": "Facebook rejected our access to this Page. Reconnect to keep receiving and sending messages.",
     "missingPermissions": "Facebook did not grant some permissions ({{permissions}}), so some features, such as customer names, may not work. Reconnect and accept every permission."
-  },
-  "couriers": {
-    "providers": {
-      "pathao": "Pathao",
-      "steadfast": "Steadfast"
-    }
   },
   "analytics": {
     "loading": "Loading…"
@@ -1753,11 +1712,9 @@
   },
   "shippingMessages": {
     "title": "Shipping messages",
-    "hint": "Send one Messenger update when a parcel is handed to the courier, one when Pathao reports it is out for delivery, and one when the order is delivered. Each stays off until you turn it on, and only later orders are included.",
+    "hint": "Send one Messenger update when an order is marked shipped and one when it is delivered. Each stays off until you turn it on, and only later orders are included.",
     "enable": "Send a pickup update when I mark an order shipped",
     "enableHint": "Only future Messenger pickup transitions, while the 24-hour reply window is open and the shop is approved.",
-    "outForDeliveryEnable": "Send an update when Pathao reports a parcel is out for delivery",
-    "outForDeliveryEnableHint": "Says the courier reported it, and includes cash on delivery when an amount was booked. No promise of delivery today or a rider call. Only the first report, on later Messenger orders, while the reply window is open.",
     "deliveredEnable": "Send a delivery update when an order is delivered",
     "deliveredEnableHint": "A full delivery thanks the customer. A partial delivery says only part arrived. No review request. Only future Messenger deliveries, while the reply window is open.",
     "loadFailed": "Could not load the shipping message settings.",
@@ -1881,108 +1838,6 @@
   "toast": {
     "close": "Close"
   },
-  "shipments": {
-    "title": "Courier",
-    "book": "Book courier",
-    "bookAgain": "Book again",
-    "bookAgainHint": "We could not find out whether the courier took this parcel. Check the courier's panel first: if it is there, use Mark as booked instead, so it is not sent twice.",
-    "noCourier": "No courier is connected.",
-    "connectInSettings": "Connect one in Settings",
-    "earlier": "Earlier attempts: {{count}}",
-    "cardLabel": "Courier booking",
-    "booking": "Sending to the courier…",
-    "failed": "Not booked: {{reason}}",
-    "onHold": "On hold",
-    "deliveryFailed": "Delivery attempt failed",
-    "tracking": "Tracking code",
-    "trackingOptional": "Tracking code (if different)",
-    "consignment": "Consignment ID",
-    "cod": "Cash to collect",
-    "collected": "Collected",
-    "collectedAmount": "{{amount}} collected",
-    "fee": "Courier fee",
-    "parcel": "Parcel",
-    "parcelDetail": "{{weight}} kg · {{type}}",
-    "sentAddress": "Address sent",
-    "note": "Note",
-    "timeline": "Courier updates",
-    "refresh": "Refresh",
-    "markBooked": "Mark as booked",
-    "markBookedHint": "Found this parcel in the courier's panel? Enter its consignment ID and we follow it from there.",
-    "markBookedSave": "Save",
-    "status": {
-      "requested": "Waiting to send",
-      "booking": "Sending",
-      "booked": "Booked",
-      "unknown": "Not sure if booked",
-      "booking_failed": "Not booked",
-      "in_transit": "In transit",
-      "delivered": "Delivered",
-      "partially_delivered": "Partly delivered",
-      "returned": "Returned",
-      "cancelled": "Cancelled by courier"
-    },
-    "review": {
-      "partial_delivery": "Partly delivered: the courier collected less than the cash on delivery. Put the items that came back into stock.",
-      "booking_outcome_unknown": "We could not find out whether the courier took this parcel. Check the courier's panel, then mark it as booked or book again.",
-      "order_cancelled_after_booking": "This order was cancelled after the courier took it. Cancel the parcel in the courier's panel.",
-      "courier_unknown": "The courier reported a status we don't know. Check the courier's panel.",
-      "exchange": "The courier reported an exchange. Check the courier's panel."
-    },
-    "source": {
-      "webhook": "from the courier",
-      "poll": "checked with the courier",
-      "booking": "booking",
-      "merchant": "by you"
-    },
-    "deliveryType": {
-      "standard": "Standard",
-      "on_demand": "On demand (same day)",
-      "point_pickup": "Point pickup"
-    },
-    "form": {
-      "label": "Book courier",
-      "courier": "Courier",
-      "deliveryType": "Delivery type",
-      "collect": "Collect",
-      "codAmount": "{{amount}} (COD)",
-      "weight": "Weight (kg)",
-      "weightHint": "Leave empty to use the products' weight, or the courier default.",
-      "weightProblem": "Enter the weight in kg, such as 0.8.",
-      "recipientName": "Customer name for the courier",
-      "address": "Address",
-      "addressHint": "For this parcel only. The order keeps its address.",
-      "editAddress": "Change for this parcel",
-      "note": "Note for the rider",
-      "customer": "Customer",
-      "submit": "Book"
-    },
-    "quote": {
-      "loading": "Working out the fee…",
-      "failed": "Could not get the fee. You can still book.",
-      "courier": "{{amount}}",
-      "estimate": "≈ {{amount}} (your rates)",
-      "codCharge": "COD charge {{amount}} ({{percent}}%)",
-      "total": "{{amount}} in all",
-      "tier": {
-        "inside_dhaka": "inside Dhaka",
-        "dhaka_suburb": "Dhaka suburbs",
-        "outside_dhaka": "outside Dhaka"
-      },
-      "reason": {
-        "location_not_matched": "No fee: the courier's area for this address was not found. Booking still works.",
-        "rate_card_missing": "No estimate: add your Steadfast rates in Settings.",
-        "courier_refused": "The courier gave no fee for this parcel."
-      }
-    },
-    "network": {
-      "check": "Check across couriers",
-      "hint": "Looks up this phone number's parcels with all couriers. The number is sent to a courier history service.",
-      "summary": "Across couriers: {{delivered}} delivered · {{returned}} returned of {{total}}",
-      "courier": "{{courier}} {{delivered}} / {{returned}}",
-      "checkedAt": "Checked {{when}}"
-    }
-  },
   "knowledge": {
     "setCount": "{{set}} of {{total}} set",
     "payment": {
@@ -2045,7 +1900,6 @@
     "SIGNUP_SMS_UNAVAILABLE": "We can't send a code right now. Please try again later.",
     "SIGNUP_BLOCKED": "We can't create an account with these details. Contact support.",
     "SIGNUP_DISABLED": "Signup is currently closed.",
-    "WAITLIST_CLOSED": "Signup is open now. Reload the page to create your shop.",
     "VALIDATION_ERROR": "Some details need fixing. Check them and try again.",
     "INTERNAL_ERROR": "Something went wrong on our side. Please try again.",
     "BAD_REQUEST": "This request could not be completed. Please try again.",
@@ -2222,21 +2076,17 @@
     "addProduct": "Add product",
     "openInbox": "Open inbox",
     "rows": {
-      "websiteReview": "Website versions to review",
-      "websiteOutcome": "Website requests answered",
       "needsYou": "Needs you",
       "draftReady": "Draft ready",
       "waiting": "Waiting for a reply",
       "readySoon": "Orders ready soon",
       "toChase": "To chase",
       "toCall": "Orders to call",
-      "needsReview": "Orders needing review",
       "outOfStock": "Out of stock",
       "lowStock": "Low stock",
       "questions": "Unanswered AI questions"
     },
     "errors": {
-      "websiteReview": "Could not load Website reviews.",
       "conversations": "Could not load conversations.",
       "orders": "Could not load orders.",
       "stock": "Could not load stock.",

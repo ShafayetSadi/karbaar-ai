@@ -1,5 +1,4 @@
-import { useFeatures } from '../../entitlements/useFeatures';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
@@ -32,51 +31,6 @@ export function ArchiveToggle({ product, onChange }: { product: Product; onChang
       >
         {t(archived ? 'editor.restore' : 'editor.archive')}
       </ActionButton>
-    </div>
-  );
-}
-
-export function StorefrontToggle({ product, onChange }: { product: Product; onChange: OnChange }) {
-  const { t } = useTranslation();
-  const website = useFeatures().isEnabled('website', false);
-  const { run, error, busy } = useMutation(onChange);
-  const [storefrontReady, setStorefrontReady] = useState(false);
-  useEffect(() => {
-    if (!website) return;
-    let active = true;
-    void call(() => api.GET('/v1/storefront/settings')).then((result) => {
-      if (active && result.ok) setStorefrontReady(result.data.status === 'live');
-    });
-    return () => {
-      active = false;
-    };
-  }, [website]);
-  if (!website) return null;
-  const shown = product.show_on_storefront;
-  return (
-    <div className="flex flex-col items-end gap-1">
-      <ActionButton
-        tone={shown ? 'soft-ok' : 'neutral'}
-        disabled={busy || !storefrontReady}
-        aria-pressed={shown}
-        onClick={() =>
-          void run(() =>
-            call(() =>
-              api.PATCH('/v1/products/{product_id}', {
-                params: { path: { product_id: product.id } },
-                body: { show_on_storefront: !shown },
-              }),
-            ),
-          )
-        }
-      >
-        {t(shown ? 'editor.shownOnStorefront' : 'editor.showOnStorefront')}
-      </ActionButton>
-      {error && (
-        <span role="alert" className="text-xs text-danger-ink">
-          {error.message}
-        </span>
-      )}
     </div>
   );
 }

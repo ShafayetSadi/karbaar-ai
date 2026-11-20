@@ -37,9 +37,7 @@ export function ProductTable({
   items,
   selection,
   onDuplicate,
-  website = false,
 }: {
-  website?: boolean;
   items: Product[];
   selection: Selection;
   onDuplicate: (product: Product) => void;
@@ -128,7 +126,7 @@ export function ProductTable({
                         <QuickStock product={product} />
                       </div>
                     )}
-                    <ProductChips product={product} website={website} />
+                    <ProductChips product={product} />
                   </div>
                 </div>
               </td>

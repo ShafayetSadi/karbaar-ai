@@ -15,9 +15,7 @@ export function ProductGrid({
   items,
   selection,
   onDuplicate,
-  website = false,
 }: {
-  website?: boolean;
   items: Product[];
   selection: Selection;
   onDuplicate: (product: Product) => void;
@@ -59,7 +57,7 @@ export function ProductGrid({
               <span className="relative z-10 self-start">
                 <QuickStock product={product} />
               </span>
-              <ProductChips product={product} website={website} />
+              <ProductChips product={product} />
             </div>
             <input
               type="checkbox"

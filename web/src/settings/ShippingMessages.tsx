@@ -9,7 +9,6 @@ import type { StoreNotesAccess } from './StoreNotes';
 export function ShippingMessages({ access }: { access: StoreNotesAccess }) {
   const { t } = useTranslation();
   const [enabled, setEnabled] = useState<boolean | null>(null);
-  const [outForDelivery, setOutForDelivery] = useState(false);
   const [delivered, setDelivered] = useState(false);
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
@@ -21,7 +20,6 @@ export function ShippingMessages({ access }: { access: StoreNotesAccess }) {
       if (cancelled) return;
       if (result.ok) {
         setEnabled(result.data.shipping_update_shipped_enabled);
-        setOutForDelivery(Boolean(result.data.shipping_update_out_for_delivery_enabled));
         setDelivered(Boolean(result.data.shipping_update_delivered_enabled));
       } else setFailed(true);
     });
@@ -31,10 +29,7 @@ export function ShippingMessages({ access }: { access: StoreNotesAccess }) {
   }, []);
 
   async function change(
-    flag:
-      | 'shipping_update_shipped_enabled'
-      | 'shipping_update_out_for_delivery_enabled'
-      | 'shipping_update_delivered_enabled',
+    flag: 'shipping_update_shipped_enabled' | 'shipping_update_delivered_enabled',
     next: boolean,
   ) {
     setBusy(true);
@@ -47,7 +42,6 @@ export function ShippingMessages({ access }: { access: StoreNotesAccess }) {
     setBusy(false);
     if (!result.ok) return void setError(result.error);
     setEnabled(result.data.shipping_update_shipped_enabled);
-    setOutForDelivery(Boolean(result.data.shipping_update_out_for_delivery_enabled));
     setDelivered(Boolean(result.data.shipping_update_delivered_enabled));
   }
 
@@ -77,23 +71,6 @@ export function ShippingMessages({ access }: { access: StoreNotesAccess }) {
               <span className="font-medium">{t('shippingMessages.enable')}</span>
               <span className="mt-1 block leading-relaxed text-ink-muted">
                 {t('shippingMessages.enableHint')}
-              </span>
-            </span>
-          </label>
-          <label className="flex min-h-16 items-start gap-3 rounded-lg border border-line bg-panel-muted/40 p-4 text-sm text-ink">
-            <input
-              type="checkbox"
-              checked={outForDelivery}
-              disabled={access !== 'edit' || busy}
-              onChange={(e) =>
-                void change('shipping_update_out_for_delivery_enabled', e.target.checked)
-              }
-              className="mt-1 size-4 shrink-0 accent-active"
-            />
-            <span>
-              <span className="font-medium">{t('shippingMessages.outForDeliveryEnable')}</span>
-              <span className="mt-1 block leading-relaxed text-ink-muted">
-                {t('shippingMessages.outForDeliveryEnableHint')}
               </span>
             </span>
           </label>

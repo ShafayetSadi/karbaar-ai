@@ -10,7 +10,7 @@ import { keyKeeper, outcomeActions, type OutcomeAction } from './outcomes';
 
 /**
  * Mark what happened to the parcel: shipped, delivered (in full or partly), returned, and a
- * returned parcel received back (its stock comes back once). By hand until couriers report it.
+ * returned parcel received back (its stock comes back once).
  */
 export function OutcomeActions({
   order,

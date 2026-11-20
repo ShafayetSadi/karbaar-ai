@@ -1,6 +1,5 @@
 import { StatusLinkControls } from './StatusLinkControls';
 import { useOptionalAuth } from '../auth/AuthProvider';
-import { useFeatures } from '../entitlements/useFeatures';
 import { ArrowLeft } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
@@ -16,7 +15,6 @@ import { ReturnsWarning } from '../customers/ReturnsWarning';
 import { formatBDT, formatDateTime, parseTaka } from '../i18n/format';
 import { leadTimeRange } from '../products/availability';
 import { ConfirmationBadge, ConfirmationTimeline } from './Confirmation';
-import { CourierPanel } from './CourierPanel';
 import { ADVANCE_METHODS, advanceMissing, canRecordAdvance, type AdvanceMethod } from './advance';
 import { OutcomeActions } from './OutcomeActions';
 import { ReadyBadge } from './ReadyBadge';
@@ -27,8 +25,6 @@ import { can } from './orderActions';
 
 export function OrderDetailPage() {
   const auth = useOptionalAuth();
-  const features = useFeatures();
-  const courierBooking = features.isEnabled('courier_booking', false);
   const { t } = useTranslation();
   const { orderId = '' } = useParams();
   const { members } = useMembers();
@@ -70,7 +66,6 @@ export function OrderDetailPage() {
     );
     if (result.ok) setOrder(result.data);
   }, [orderId]);
-  const reloadOrder = useCallback(() => void reload(), [reload]);
 
   useEffect(() => {
     if (
@@ -200,12 +195,6 @@ export function OrderDetailPage() {
             {t('orders.number', { number: order.number })}
           </h1>
           <StatusBadge status={order.status} />
-          {order.source === 'storefront' && (
-            <Chip tone="neutral">{t('orders.sourceBadge.storefront')}</Chip>
-          )}
-          {order.source === 'storefront' && !order.phone_verified_at && (
-            <Chip tone="warn">{t('orders.phoneNotVerified')}</Chip>
-          )}
           <ConfirmationBadge confirmation={order.confirmation} />
           {order.is_partial_delivery && <Chip tone="warn">{t('orders.outcome.partialChip')}</Chip>}
           <ReadyBadge order={order} />
@@ -213,7 +202,6 @@ export function OrderDetailPage() {
             <Chip tone="team">
               {order.credit === 'agent' && t('orders.credit.agent')}
               {order.credit === 'product_page' && t('orders.credit.product_page')}
-              {order.credit === 'storefront' && t('orders.credit.storefront')}
               {order.credit === 'team' &&
                 (order.created_by_user_id
                   ? t('orders.credit.team', {
@@ -540,8 +528,6 @@ export function OrderDetailPage() {
         record={order.customer_record}
         refresh={customerVersion}
       />
-
-      {courierBooking && <CourierPanel order={order} onOrderChanged={reloadOrder} />}
 
       <OutcomeActions order={order} onChange={setOrder} onError={setError} />
 

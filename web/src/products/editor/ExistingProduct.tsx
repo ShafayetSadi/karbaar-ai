@@ -29,7 +29,7 @@ import { FactsEditor } from './FactsEditor';
 import { GalleryPanel, SizeChartImage } from './ImagesEditor';
 import { PricingPanel } from './PricingEditor';
 import { PostLinksPanel } from './PostLinksEditor';
-import { ArchiveToggle, DeleteConfirm, StorefrontToggle, useDuplicate } from './ProductActions';
+import { ArchiveToggle, DeleteConfirm, useDuplicate } from './ProductActions';
 import { SizeChartEditor } from './SizeChartEditor';
 import { VariantsPanel } from './VariantsEditor';
 import { WholesaleEditor } from './WholesaleEditor';
@@ -193,7 +193,6 @@ function ProductPage({
         }
         actions={
           <>
-            <StorefrontToggle product={product} onChange={onChange} />
             <ArchiveToggle product={product} onChange={onChange} />
             <Menu trigger={<IconButton icon={MoreHorizontal} label={t('editor.actions')} />}>
               <MenuItem

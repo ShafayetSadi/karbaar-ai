@@ -107,17 +107,10 @@ export function StockLine({ product, className }: { product: Product; className?
 }
 
 /** What needs the merchant's eye: stock state, availability other than in stock, archived. */
-export function ProductChips({
-  product,
-  website = false,
-}: {
-  product: Product;
-  website?: boolean;
-}) {
+export function ProductChips({ product }: { product: Product }) {
   const { t } = useTranslation();
   const chips = [
     product.status === 'archived' && <Chip key="archived">{t('products.archivedBadge')}</Chip>,
-    website && !product.show_on_storefront && <Chip key="hidden">{t('products.hiddenBadge')}</Chip>,
     product.stock?.state === 'out' && (
       <Chip key="out" tone="danger">
         {t('products.stockOut')}

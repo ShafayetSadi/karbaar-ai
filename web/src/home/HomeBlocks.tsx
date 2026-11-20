@@ -132,7 +132,7 @@ export function TodayBlock() {
   );
 }
 
-const SOURCES = ['storefront', 'web_chat', 'messenger', 'dashboard'];
+const SOURCES = ['messenger', 'dashboard'];
 
 /** The last five orders from every source, for owners and teammates. */
 export function RecentOrders() {

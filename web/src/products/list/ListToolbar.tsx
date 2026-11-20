@@ -1,4 +1,3 @@
-import { useFeatures } from '../../entitlements/useFeatures';
 import { LayoutGrid, Rows3, SlidersHorizontal, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -20,11 +19,10 @@ export type ListFilters = {
   q: string;
   type: ProductType | '';
   sort: 'newest' | 'stock';
-  storefront: 'visible' | 'hidden' | '';
 };
 
 /**
- * Search, the filters that rarely change (type, sort, storefront) behind one button, the view
+ * Search, the filters that rarely change (type, sort) behind one button, the view
  * switch, and a removable chip for each filter in effect.
  */
 export function ListToolbar({
@@ -37,28 +35,17 @@ export function ListToolbar({
 }: {
   filters: ListFilters;
   onSearch: (q: string) => void;
-  onFilter: (key: 'type' | 'sort' | 'storefront', value: string | null) => void;
-  /** Drops type, sort and storefront in one URL change. */
+  onFilter: (key: 'type' | 'sort', value: string | null) => void;
+  /** Drops type and sort in one URL change. */
   onClear: () => void;
   view: ViewMode;
   onView: (view: ViewMode) => void;
 }) {
   const { t } = useTranslation();
-  const website = useFeatures().isEnabled('website', false);
-  const { type, sort, storefront } = filters;
+  const { type, sort } = filters;
   const chips = [
     type && { key: 'type' as const, label: t(`productType.${type}`) },
     sort === 'stock' && { key: 'sort' as const, label: t('products.sortStock') },
-    website &&
-      storefront === 'visible' && {
-        key: 'storefront' as const,
-        label: t('products.filterStorefrontVisible'),
-      },
-    website &&
-      storefront === 'hidden' && {
-        key: 'storefront' as const,
-        label: t('products.filterStorefrontHidden'),
-      },
   ].filter((chip) => !!chip);
 
   return (
@@ -105,18 +92,6 @@ export function ListToolbar({
               { value: 'stock', label: t('products.sortStock') },
             ]}
           />
-          {website && (
-            <FilterSelect
-              label={t('products.filterStorefront')}
-              value={storefront}
-              onChange={(value) => onFilter('storefront', value || null)}
-              options={[
-                { value: '', label: t('products.filterStorefrontAll') },
-                { value: 'visible', label: t('products.filterStorefrontVisible') },
-                { value: 'hidden', label: t('products.filterStorefrontHidden') },
-              ]}
-            />
-          )}
         </Popover>
         {/* The keyboard shortcuts show on hover or focus of the view switch. */}
         <Tooltip side="bottom" content={t('products.shortcuts')}>

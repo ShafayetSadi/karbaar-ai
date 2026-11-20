@@ -491,9 +491,7 @@ function Row({
       <span>{t('inbox.you')} · </span>
     ) : null;
 
-  const name =
-    c.customer_name ??
-    (c.channel === 'web' ? t('inbox.websiteVisitor') : t('inbox.unknownCustomer'));
+  const name = c.customer_name ?? t('inbox.unknownCustomer');
   const selecting = checked !== undefined;
   const className = cx(
     'flex w-full gap-3 border-b border-l-[3px] border-b-line py-2.5 pr-3 pl-2.5 text-left',
@@ -508,11 +506,7 @@ function Row({
   );
   const content = (
     <>
-      <CustomerAvatar
-        name={c.customer_name}
-        photoUrl={c.customer_photo_url}
-        channel={c.channel === 'web' ? 'web' : 'messenger'}
-      />
+      <CustomerAvatar name={c.customer_name} photoUrl={c.customer_photo_url} channel />
       <span className="block min-w-0 flex-1 space-y-1">
         <span className="flex items-center gap-1.5">
           {unread && <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-ok-ink" />}

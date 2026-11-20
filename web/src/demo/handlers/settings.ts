@@ -352,29 +352,3 @@ on('delete', '/v1/shop-info/payment-accounts/{account_id}', ({ params }) => {
   renumber();
   return null;
 });
-
-// Courier and storefront: both off in the demo -------------------------------------------------
-
-on('get', '/v1/courier-connections', () => ({ items: [] }));
-
-on('get', '/v1/storefront/settings', () => ({
-  address_text: null,
-  buy_it_now_enabled: false,
-  contact_email: null,
-  contact_phone: null,
-  default_language: 'bn' as const,
-  facebook_url: null,
-  handle: null,
-  instagram_url: null,
-  logo_media_id: null,
-  low_stock_messages_enabled: false,
-  messenger_url: null,
-  name: merchantState.name,
-  seo_description: null,
-  seo_title: null,
-  shop_url: null,
-  status: 'draft' as const,
-  tagline: null,
-  web_chat_enabled: false,
-  whatsapp_phone: null,
-}));

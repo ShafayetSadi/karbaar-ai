@@ -5,7 +5,7 @@ import { ConnectionBanner } from './ConnectionBanner';
 import { PageSubscriptionBanner } from './PageSubscriptionBanner';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthProvider';
 import { AssignmentAlerts } from '../inbox/AssignmentAlerts';
@@ -20,7 +20,6 @@ import { useMediaQuery } from './useMediaQuery';
 
 export function AppLayout() {
   const { state } = useAuth();
-  const location = useLocation();
   const features = useFeatures();
   // Gate only the first load. A failed or refetching query flips back to pending when children
   // remount, which would unmount them again and loop forever.
@@ -32,8 +31,6 @@ export function AppLayout() {
   const mainRef = useScrollRestoration();
   const mobile = !useMediaQuery('(min-width: 48rem)');
   if (state.status !== 'authenticated') return null;
-  // Studio owns the whole viewport; other Website routes keep the shared shell.
-  const studio = /^\/website\/studio(?:\/|$)/.test(location.pathname);
   // Resolve navigation permissions before showing the menu, so links appear together.
   if (!featuresSettled) return null;
   const { me } = state;
@@ -46,30 +43,18 @@ export function AppLayout() {
           cannot stretch the document past the viewport and scroll the whole shell. */}
       {/* From md the content is an inset, rounded panel (`paper`) on the darker `chrome` that
           also carries the sidebar. Phones keep it full-bleed. */}
-      <div
-        className={cx(
-          'relative flex h-dvh overflow-clip bg-chrome text-ink',
-          !studio &&
-            'pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)]',
-        )}
-      >
-        <aside className={studio ? 'hidden' : 'hidden shrink-0 bg-chrome md:block md:w-16 xl:w-60'}>
-          {!studio && <Sidebar compact={!wide} />}
+      <div className="relative flex h-dvh overflow-clip bg-chrome pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] pt-[env(safe-area-inset-top)] text-ink">
+        <aside className="hidden shrink-0 bg-chrome md:block md:w-16 xl:w-60">
+          <Sidebar compact={!wide} />
         </aside>
-        {!studio && drawerOpen && mobile && <Drawer onClose={() => setDrawerOpen(false)} />}
-        <div
-          className={cx(
-            'flex min-w-0 flex-1 flex-col bg-paper',
-            !studio && 'md:my-2 md:mr-2 md:overflow-clip md:rounded-lg md:border md:border-line',
-          )}
-        >
+        {drawerOpen && mobile && <Drawer onClose={() => setDrawerOpen(false)} />}
+        <div className="flex min-w-0 flex-1 flex-col bg-paper md:my-2 md:mr-2 md:overflow-clip md:rounded-lg md:border md:border-line">
           {/* The live-updates warning sits in the phone bar, or atop the panel from md. */}
-          {!studio &&
-            (mobile ? <MobileBar onOpenMenu={() => setDrawerOpen(true)} /> : <LiveNotice />)}
-          {!studio && !me.user.email_verified && <VerifyEmailBanner />}
-          {!studio && <ReviewBanner />}
-          {!studio && <ConnectionBanner />}
-          {!studio && <PageSubscriptionBanner />}
+          {mobile ? <MobileBar onOpenMenu={() => setDrawerOpen(true)} /> : <LiveNotice />}
+          {!me.user.email_verified && <VerifyEmailBanner />}
+          <ReviewBanner />
+          <ConnectionBanner />
+          <PageSubscriptionBanner />
           <main ref={mainRef} className="relative min-h-0 flex-1 overflow-y-auto">
             <Outlet />
           </main>

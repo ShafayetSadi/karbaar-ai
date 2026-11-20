@@ -12,14 +12,14 @@ import {
 } from '../cast';
 import { DemoError, notFound, on } from '../router';
 
-// Owner: orders-agent. Orders, quotes, shipments, order counts, analytics, address areas.
+// Owner: orders-agent. Orders, quotes, order counts, analytics, address areas.
 // Orders live in `orders`, newest first. Every total is computed from its lines by `price()`.
 
 type Order = components['schemas']['OrderRead'];
 type OrderStatus = Order['status'];
 type Action = Order['allowed_actions'][number];
 type Confirmation = NonNullable<Order['confirmation']>;
-type Source = 'messenger' | 'dashboard' | 'storefront' | 'web_chat';
+type Source = 'messenger' | 'dashboard';
 
 const MIN = 60_000;
 const DAY = 24 * 60 * MIN;
@@ -185,7 +185,7 @@ function build(spec: Spec): Order {
     coupon_code: null,
     created_at: created,
     created_by_user_id: null,
-    credit: spec.source === 'messenger' ? 'agent' : spec.source === 'storefront' ? 'storefront' : 'team',
+    credit: spec.source === 'messenger' ? 'agent' : 'team',
     currency: CURRENCY,
     customer: {
       address: {
@@ -439,7 +439,6 @@ function matches(order: Order, query: URLSearchParams): boolean {
   if (readyBy && !(order.ready_by !== null && order.ready_by < readyBy)) return false;
   const confirmation = query.get('confirmation');
   if (confirmation && order.confirmation?.status !== confirmation) return false;
-  if (query.get('shipment') === 'needs_review' && order.shipment?.needs_review_reason == null) return false;
   const q = query.get('q')?.trim().toLowerCase();
   if (q) {
     const haystack = [
@@ -611,31 +610,6 @@ function statusLink(orderId: string, reset: boolean): components['schemas']['Sta
 }
 on('post', '/v1/orders/{order_id}/status-link', ({ params }) => statusLink(params.order_id ?? '', false));
 on('post', '/v1/orders/{order_id}/status-link/reset', ({ params }) => statusLink(params.order_id ?? '', true));
-
-// ---------------------------------------------------------------- shipments (courier is not in the demo)
-
-const noCourier = () =>
-  new DemoError(501, 'DEMO_UNAVAILABLE', 'Courier booking is not available in the demo. Book in the courier panel.');
-
-on('get', '/v1/orders/{order_id}/shipments', ({ params }) => {
-  requireOrder(params.order_id ?? '');
-  return { items: [] };
-});
-on('post', '/v1/orders/{order_id}/shipments', () => {
-  throw noCourier();
-});
-on('post', '/v1/shipments/quote', () => {
-  throw noCourier();
-});
-on('post', '/v1/shipments/bulk', () => {
-  throw noCourier();
-});
-on('post', '/v1/shipments/{shipment_id}/mark-booked', () => {
-  throw noCourier();
-});
-on('post', '/v1/shipments/{shipment_id}/refresh', () => {
-  throw noCourier();
-});
 
 // ---------------------------------------------------------------- analytics
 
