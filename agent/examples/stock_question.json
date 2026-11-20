@@ -1,0 +1,26 @@
+{
+  "shop_name": "Nakshi Ghor",
+  "catalog": [
+    {
+      "id": "p-panjabi",
+      "name": "Cotton Panjabi",
+      "description": "সুতি পাঞ্জাবি, ঈদ কালেকশন।",
+      "aliases": ["panjabi", "পাঞ্জাবি"],
+      "price_minor": 180000,
+      "variants": [
+        { "id": "v-m-white", "options": { "Size": "M", "Colour": "White" }, "stock": 12 },
+        { "id": "v-l-white", "options": { "Size": "L", "Colour": "White" }, "stock": 0 },
+        { "id": "v-l-navy", "options": { "Size": "L", "Colour": "Navy" }, "stock": 20 }
+      ]
+    }
+  ],
+  "delivery_options": [
+    { "id": "d-in", "name": "Inside Dhaka", "fee_minor": 7000, "days": "1-2", "inside_dhaka": true },
+    { "id": "d-out", "name": "Outside Dhaka", "fee_minor": 13000, "days": "3-5", "inside_dhaka": false }
+  ],
+  "conversation": [
+    { "author": "customer", "text": "Assalamu alaikum apu" },
+    { "author": "customer", "text": "Bhaiyer jonno panjabi lagbe, L size white ache? dam koto?" }
+  ],
+  "customer": { "name": "Nusrat Jahan", "district": "Dhaka", "area": "Mirpur" }
+}

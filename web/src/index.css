@@ -1,0 +1,113 @@
+@import 'tailwindcss';
+
+/* `dark:` follows the resolved theme on <html>, not only the OS setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/*
+ * Design tokens. Components use these utilities (bg-paper, text-ink-muted, border-line, ...)
+ * rather than raw palette colours, so the light and dark themes stay one set of classes.
+ */
+:root {
+  color-scheme: light;
+  /*
+   * Neutral greys with a lime accent (docs/product/brand.md, "Visual identity", dashboard). Three
+   * surfaces: `chrome` (sidebar and the frame around the content), `paper` (the inset content
+   * panel) and `panel` (cards inside it). Lime is a fill only in light mode: text, links and focus
+   * rings use `active`, a dark olive that reads on white.
+   */
+  --chrome: #f3f3f4;
+  --paper: #fcfcfd;
+  --panel: #ffffff;
+  --panel-muted: #f0f0f2;
+  --line: #e4e4e7;
+  --ink: #18181b;
+  --ink-muted: #52525b;
+  --ink-faint: #6b6b74;
+  --accent: #d1f23b;
+  --accent-strong: #c3e52b;
+  --accent-ink: #1a2004;
+  --active: #4a5a0c;
+  /* The logo keeps the Karbaar forest and brick in both themes (mint mark in dark). */
+  --mark: #0f2e24;
+  /* Brick thread: decoration only (the logo's price tag), never text or status. */
+  --thread: #c2532f;
+  --ai: #dbeef1;
+  --ai-ink: #156a72;
+  --team: #e6e8f7;
+  --team-ink: #3a4590;
+  --warn: #fbecc8;
+  --warn-ink: #85540a;
+  --ok: #dff2e2;
+  --ok-ink: #1f7a3a;
+  --danger: #fbe3df;
+  --danger-ink: #a2321f;
+  /* Brand mark for the channel badge; the same in both themes. */
+  --messenger: #0866ff;
+  --messenger-ink: #ffffff;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --chrome: #0a0a0b;
+  --paper: #131315;
+  --panel: #1a1a1d;
+  --panel-muted: #232327;
+  --line: #2b2b30;
+  --ink: #ededef;
+  --ink-muted: #a1a1a9;
+  --ink-faint: #8e8e97;
+  --accent: #d1f23b;
+  --accent-strong: #dcf762;
+  --accent-ink: #1a2004;
+  --active: #d1f23b;
+  --mark: #cfe7c3;
+  --thread: #e8906c;
+  --ai: #12272b;
+  --ai-ink: #7fcfd6;
+  --team: #1d2040;
+  --team-ink: #aab4f0;
+  --warn: #2e2617;
+  --warn-ink: #f0c172;
+  --ok: #13291a;
+  --ok-ink: #6ad58a;
+  --danger: #36191a;
+  --danger-ink: #f1a597;
+}
+
+@theme {
+  --font-sans: 'Inter Variable', 'Hind Siliguri', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Hind Siliguri', ui-monospace, monospace;
+
+  --color-chrome: var(--chrome);
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-panel-muted: var(--panel-muted);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-ink: var(--accent-ink);
+  --color-active: var(--active);
+  --color-mark: var(--mark);
+  --color-thread: var(--thread);
+  --color-ai: var(--ai);
+  --color-ai-ink: var(--ai-ink);
+  --color-team: var(--team);
+  --color-team-ink: var(--team-ink);
+  --color-warn: var(--warn);
+  --color-warn-ink: var(--warn-ink);
+  --color-ok: var(--ok);
+  --color-ok-ink: var(--ok-ink);
+  --color-danger: var(--danger);
+  --color-danger-ink: var(--danger-ink);
+  --color-messenger: var(--messenger);
+  --color-messenger-ink: var(--messenger-ink);
+}
+
+@layer base {
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+  }
+}

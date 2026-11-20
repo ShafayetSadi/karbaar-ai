@@ -1,0 +1,24 @@
+[project]
+name = "karbaar-agent"
+version = "0.1.0"
+description = "Karbaar's sales assistant (demo): drafts Messenger replies for a Bangladeshi shop from its real catalog, stock and delivery fees."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.32",
+    "openai>=1.60",
+    "pydantic>=2.9",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "httpx>=0.28"]
+
+[project.scripts]
+karbaar-agent = "karbaar_agent.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

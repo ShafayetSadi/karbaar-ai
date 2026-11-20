@@ -1,0 +1,1 @@
+"""Karbaar sales assistant (demo)."""
